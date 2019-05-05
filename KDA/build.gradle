@@ -1,0 +1,84 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.jakewharton:butterknife-gradle-plugin:10.1.0'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        maven { url "https://jitpack.io" }
+        maven { url 'https://maven.google.com' }
+        jcenter()
+
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+// Define versions in a single place
+ext {
+    // Sdk and tools
+    minSdkVersion = 16
+    targetSdkVersion = 28
+    compileSdkVersion = 28
+    buildToolsVersion = '28.0.3'
+    constraintLayoutVersion = '1.1.3'
+    recyclerViewVersion = '1.0.0'
+    cardViewVersion = '1.0.0'
+
+    // App dependencies
+    supportLibraryVersion = '1.0.2'
+    materialVersion = '1.0.0'
+    vectorDrawableVersion = '1.0.1'
+    animatedVectorDrawableVersion = '1.0.0'
+    gsonVersion = '2.8.2'
+    calligraphyVersion = '2.2.0'
+    glideVersion = '3.7.0'
+    roomDatabaseVersion = '2.0.0'
+    rx2FastAndroidNetworking = '1.0.1'
+
+    dagger2Version = '2.17'
+    rxjava2Version = '2.1.9'
+    rxandroidVersion = '2.0.2'
+    placeholderviewVersion = '0.6.1'
+    debugDBVersion = '1.0.3'
+    timberVersion = '4.5.1'
+    lifecycleVersion = '2.0.0'
+
+    // Test dependencies
+    junitVersion = '4.12'
+    espressoVersion = '3.1.0'
+    mockitoVersion = '2.15.0'
+
+    //yoyo
+    supportCompat = '25.1.1'
+    easing = '2.0@aar'
+    androidanimation = '2.3@aar'
+    // circle image
+
+    circle_image = '3.0.0'
+
+    //butterknife
+    butterknife = '10.1.0'
+
+    // photoview
+    photoView = '2.3.0'
+
+    //html format
+    html_fomat = '1.1.1'
+}
+
+
