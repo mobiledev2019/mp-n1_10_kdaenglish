@@ -1,8 +1,8 @@
 # KDA English App
 App was create by my teams
-#App Responsibility
+# App Responsibility
 Le Vu Anh | Do Hoang Thai Duong | Nguyen Quoc Khanh
-#Backend
+# Backend
 Nguyen Quoc Khanh
-#ML
+# ML
 Do Hoang Thai Duong
