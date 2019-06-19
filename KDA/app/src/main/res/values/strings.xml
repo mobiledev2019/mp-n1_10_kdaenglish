@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">KDATalk</string>
-    <string name="facebook_app_id">354632808476806</string>
-    <string name="fb_login_protocol_scheme">fb354632808476806</string>
+    <!--<string name="facebook_app_id">354632808476806</string>-->
+    <!--<string name="fb_login_protocol_scheme">fb354632808476806</string>-->
     //
     <!--Toolbar menus-->
     <string name="clear">Clear</string>
@@ -28,8 +28,13 @@
 
     <!--Login-->
     <string name="login_kdatalk">Login KDATalk</string>
-    <string name="login">Login</string>
+    <string name="login">Đăng Nhập</string>
     <string name="email">Email</string>
+    <string name="username">Username</string>
+    <string name="username_vie">Tên Đăng Nhập</string>
+    <string name="confirm_pass">Nhập Lại Mật Khẩu</string>
+    <string name="password_vie">Mật Khẩu</string>
+    <string name="phone">Số Điện Thoại</string>
     <string name="password">Password</string>
 
     <!--Login Validation-->
@@ -53,7 +58,6 @@
     <string name="rating_thanks">Thank you!</string>
 
     <!--play store-->
-    <string name="app_google_play_store_link">"https://play.google.com/store/apps/details?id="</string>
     <string name="app_market_link">"market://details?id="</string>
 
     <!--button-->
@@ -101,6 +105,11 @@ Ig: huetruc99"</string>
     <string name="lbl_cancel">Hủy bỏ</string>
     <string name="lbl_search">Tìm kiếm</string>
     <string name="lbl_learn_voice">Chạm vào micro để nói, tập trung vào kí tự được in lớn</string>
+
+    <string name="forgot_password">Quên Mật Khẩu?</string>
+    <string name="register">Đăng Ký</string>
+    <string name="name">Họ Và Tên</string>
+
 
 
 </resources>

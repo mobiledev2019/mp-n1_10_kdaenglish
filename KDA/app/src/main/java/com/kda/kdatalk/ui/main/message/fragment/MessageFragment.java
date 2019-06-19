@@ -10,12 +10,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.http.Body;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +33,8 @@ import com.kda.kdatalk.model.chat.MessageModel;
 import com.kda.kdatalk.ui.base.FragmentBase;
 import com.kda.kdatalk.ui.main.message.MessageActivity;
 import com.kda.kdatalk.ui.main.message.fragment.adapter.Message_Adapter;
+import com.kda.kdatalk.ui.widget.ProgressView;
+import com.kda.kdatalk.utils.UtilLibs;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -39,6 +45,7 @@ import java.util.TimerTask;
  */
 public class MessageFragment extends FragmentBase implements MessageFragmentView {
 
+    private static final String TAG = MessageFragment.class.getSimpleName();
     View viewRoot;
 
     Context mContext;
@@ -55,8 +62,11 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
     @BindView(R.id.tv_name)
     TextView tv_name;
 
+    @BindView(R.id.sw_refresh)
+    SwipeRefreshLayout sw_refresh;
+
     @BindView(R.id.progress_bar)
-    ProgressBar progress_bar;
+    ProgressView progress_bar;
 
     ArrayList<MessageModel> list_contact;
     Message_Adapter adapter;
@@ -102,7 +112,6 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new MessgaeFragmentImpl(mContext, this);
-        list_contact = presenter.getListContact();
 
         getActivity();
     }
@@ -110,6 +119,17 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        sw_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenter.getListContactBySearch(getUserCache()._id);
+            }
+        });
+
+//        list_contact = presenter.getListContact();
+
+        presenter.getListContactBySearch(getUserCache()._id);
 
         // get Data
         adapter = new Message_Adapter(mContext, list_contact, onItemClickListener);
@@ -151,8 +171,8 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
                                 @Override
                                 public void run() {
                                     // call api
-                                    list_contact = presenter.getListContactBySearch(s.toString().trim());
-                                    adapter.notifyDataSetChanged();
+                                    presenter.getListContactBySearch(getUserCache()._id);
+//                                    adapter.notifyDataSetChanged();
                                 }
                             });
 
@@ -166,6 +186,8 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
     AdapterView.OnItemClickListener onItemClickListener = (parent, view, position, id) -> {
         Intent intent = new Intent(mContext, MessageActivity.class);
         intent.putExtra("ID_MESS", list_contact.get(position).id);
+        intent.putExtra("URL_PARTNER", list_contact.get(position).user.url_img_ava);
+        intent.putExtra("PARTNER_NAME", list_contact.get(position).user.name);
         mContext.startActivity(intent);
     };
 
@@ -181,5 +203,52 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
         if (progress_bar != null) {
             progress_bar.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onGetListSuccess(ArrayList<MessageModel> data) {
+        hideProgress();
+
+        if (sw_refresh.isRefreshing()) {
+            sw_refresh.setRefreshing(false);
+        }
+
+        if (data != null && data.size() > 0) {
+            list_contact = data;
+            adapter.setListContact(list_contact);
+
+            adapter.notifyDataSetChanged();
+
+//            getActivity().runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    adapter.notifyDataSetChanged();
+//                }
+//            });
+        } else {
+
+            list_contact = new ArrayList<>();
+            adapter.setListContact(list_contact);
+            adapter.notifyDataSetChanged();
+//            getActivity().runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    adapter.notifyDataSetChanged();
+//                }
+//            });
+            Log.e(TAG, "onGetListSuccess: " + "not have data");
+        }
+
+    }
+
+    @Override
+    public void onError(String msg) {
+        hideProgress();
+
+        if (sw_refresh.isRefreshing()) {
+            sw_refresh.setRefreshing(false);
+        }
+        UtilLibs.showAlert(mContext, msg);
+
     }
 }

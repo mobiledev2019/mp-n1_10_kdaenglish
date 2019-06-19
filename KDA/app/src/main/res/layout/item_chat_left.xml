@@ -2,26 +2,26 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
     android:background="@color/black"
-    android:orientation="vertical">
-    
+    android:orientation="vertical"
+    android:padding="8dp">
+
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="40dp"
         android:id="@+id/cv_ava"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/user_no_img"
-        android:layout_height="40dp" />
-    
+        android:src="@drawable/user_no_img" />
+
     <TextView
         android:id="@+id/tv_content"
-        android:layout_toRightOf="@id/cv_ava"
-        android:layout_marginLeft="5dp"
-        android:padding="8dp"
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        android:background="@drawable/bg_itemchat_left"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/cv_ava"
+        android:background="@drawable/bg_itemchat_left"
+        android:padding="8dp"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
 </RelativeLayout>

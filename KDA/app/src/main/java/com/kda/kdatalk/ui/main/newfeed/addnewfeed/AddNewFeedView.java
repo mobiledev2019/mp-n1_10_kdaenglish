@@ -4,4 +4,5 @@ public interface AddNewFeedView {
     void showProgress();
     void hideProgress();
 
+    void onAddSuccess(boolean isSuccess, String message);
 }

@@ -1,8 +1,13 @@
 package com.kda.kdatalk.ui.main.newfeed.viewcontent;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -15,12 +20,15 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.kda.kdatalk.R;
+import com.kda.kdatalk.model.Comment;
 import com.kda.kdatalk.model.NewFeed;
 import com.kda.kdatalk.ui.base.ActivityBase;
 import com.kda.kdatalk.ui.main.newfeed.fragment.ViewImageFragment;
 import com.kda.kdatalk.ui.main.newfeed.viewcontent.adapter.Comment_Adapter;
 import com.kda.kdatalk.ui.main.newfeed.viewcontent.adapter.ViewImageAdapter;
 import com.kda.kdatalk.ui.main.newfeed.viewcontent.fragment.CreateCommentFragment;
+import com.kda.kdatalk.ui.widget.ProgressView;
+import com.kda.kdatalk.utils.AppConstants;
 import com.kda.kdatalk.utils.UtilLibs;
 import com.squareup.picasso.Picasso;
 
@@ -31,6 +39,7 @@ import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -38,6 +47,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ViewContentNewFeedActivity extends ActivityBase implements ViewContentView {
     private static final String ID_FEED = "ID_FEED";
+    private static final String TAG = ViewContentNewFeedActivity.class.getSimpleName();
 
     @BindView(R.id.iv_ava)
     CircleImageView iv_ava;
@@ -63,6 +73,12 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
     @BindView(R.id.rl_comment)
     RelativeLayout rl_comment;
 
+    @BindView(R.id.tv_errhappend)
+    TextView tv_errhappend;
+
+    @BindView(R.id.tv_name)
+    TextView tv_name;
+
 
     @BindView(R.id.rl_like)
     RelativeLayout rl_like;
@@ -74,7 +90,7 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
     RecyclerView rv_image;
 
     @BindView(R.id.progress_bar)
-    ProgressBar progressBar;
+    ProgressView progressBar;
 
     @BindView(R.id.scr_main)
     ScrollView scr_main;
@@ -87,6 +103,9 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
 
     @BindView(R.id.et_comment)
     EditText et_comment;
+
+    @BindView(R.id.viewContent)
+    FrameLayout viewContent;
 
     NewFeed newFeed;
 
@@ -112,26 +131,50 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
         } catch (Exception e) {
 
         }
+
+//        registerReceiver(receiver, new IntentFilter(AppConstants.RELOAD));
         setUpInput();
-        setUpData();
+
     }
 
 
     private void setUpInput() {
         showProgress();
+
+        showData(false);
+
         presenter = new ViewContentPresenterImpl(this, this);
         // getData
 
-        newFeed = presenter.getDetailNF(id_feed);
+        presenter.getDetailNF(id_feed);
+    }
+
+    private void showData(boolean isShow) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!isShow) {
+                    viewContent.setVisibility(View.GONE);
+                    scr_main.setVisibility(View.GONE);
+                } else {
+                    viewContent.setVisibility(View.VISIBLE);
+                    scr_main.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
+
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setUpData() {
-        Picasso.get().load(newFeed.user_url).placeholder(R.drawable.noimg).error(R.drawable.noimg).into(iv_ava);
+        Picasso.get().load(newFeed.user_url).placeholder(R.drawable.user_no_img).error(R.drawable.user_no_img).into(iv_ava);
         tv_content.setText(newFeed.content);
         tv_numComment.setText(String.valueOf(newFeed.num_comment));
         tv_time.setText(newFeed.create_at);
+        tv_name.setText(newFeed.user_name);
         tv_numLike.setText(String.valueOf(newFeed.num_like));
         iv_like.setBackground(newFeed.isLike ? getDrawable(R.drawable.icon_like_clicked) : getDrawable(R.drawable.icon_like));
 
@@ -189,12 +232,20 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
         comment_adapter = new Comment_Adapter(ViewContentNewFeedActivity.this, newFeed.list_comment, new Comment_Adapter.OnClickVote() {
             @Override
             public void voteUp(int position, boolean isVote) {
-                // do something vote up
+
+                presenter.voteNFup(isVote, newFeed.list_comment.get(position).id);
+
+                //
+                // do something num_vote up
             }
 
             @Override
             public void voteDown(int position, boolean isVote) {
-                // do something vote down
+                presenter.voteNFdown(isVote, newFeed.list_comment.get(position).id);
+
+                //
+
+                // do something num_vote down
             }
         });
 
@@ -228,11 +279,11 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
     private void configScrollView(boolean isMargin) {
         if (isMargin) {
             FrameLayout.LayoutParams scroll_params = (FrameLayout.LayoutParams) scr_main.getLayoutParams();
-            scroll_params.setMargins(0,0,0,70);
+            scroll_params.setMargins(0, 0, 0, 70);
             scr_main.setLayoutParams(scroll_params);
         } else {
             FrameLayout.LayoutParams scroll_params = (FrameLayout.LayoutParams) scr_main.getLayoutParams();
-            scroll_params.setMargins(0,0,0,0);
+            scroll_params.setMargins(0, 0, 0, 0);
             scr_main.setLayoutParams(scroll_params);
         }
     }
@@ -243,7 +294,7 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
 
     @OnClick({R.id.cv_comment, R.id.et_comment, R.id.iv_send})
     public void createComment() {
-        changeFragment(R.id.viewMain, CreateCommentFragment.newInstance(newFeed.id, newFeed.content), true);
+        addFragment(R.id.viewMain, CreateCommentFragment.newInstance(newFeed.id, newFeed.content), true);
     }
 
     @Override
@@ -258,5 +309,104 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void getDetailSuccess(boolean isSuccess, NewFeed nf, String message) {
+        hideProgress();
+        Log.e(TAG, "getDetailSuccess: " + isSuccess);
+
+
+        if (isSuccess) {
+
+            Log.e(TAG, "getDetailSuccess: username " + nf.user_name);
+
+            Log.e(TAG, "getDetailSuccess: " + nf.list_comment.size());
+            Log.e(TAG, "getDetailSuccess: " + nf.list_comment.get(1).user.name);
+
+            tv_errhappend.setVisibility(View.GONE);
+            showData(true);
+
+            this.newFeed = nf;
+
+            setUpData();
+            scr_main.setSmoothScrollingEnabled(true);
+            scr_main.fullScroll(ScrollView.FOCUS_UP);
+
+
+        } else {
+
+//            setUpData();
+
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    scr_main.fullScroll(ScrollView.FOCUS_UP);
+                }
+            }, 500);
+
+            tv_errhappend.setVisibility(View.VISIBLE);
+            showData(false);
+            UtilLibs.showAlert(this, message);
+        }
+
+    }
+
+    @Override
+    public void createCommentSuccess(Comment comment) {
+
+        newFeed.list_comment.add(comment);
+
+        newFeed.num_comment++;
+
+
+        comment_adapter.setList_data(newFeed.list_comment);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv_numComment.setText(String.valueOf(newFeed.num_comment));
+                comment_adapter.notifyDataSetChanged();
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume: ");
+
+//        try {
+//            registerReceiver(receiver, new IntentFilter(AppConstants.RELOAD));
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+    }
+//
+//    BroadcastReceiver receiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Log.e(TAG, "onReceive: " + intent.getAction());
+//            if (intent.getAction().equals(AppConstants.RELOAD)) {
+//                presenter.getDetailNF(id_feed);
+//            }
+//        }
+//    };
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+//        try {
+//            unregisterReceiver(receiver);
+//
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }

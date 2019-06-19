@@ -11,15 +11,6 @@
         android:layout_margin="5dp"
         android:orientation="horizontal">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/iv_ava"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="5dp"
-            android:maxWidth="30dp"
-            android:maxHeight="30dp"
-            app:civ_border_color="@color/black"
-            app:civ_border_width="1dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,87 +20,159 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tv_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/font_name"
-                    android:text="Vu Anh Levis"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/iv_ava"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:maxWidth="30dp"
+                    android:maxHeight="30dp"
+                    app:civ_border_color="@color/black"
+                    app:civ_border_width="1dp" />
 
-                <TextView
-                    android:id="@+id/tv_time"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:fontFamily="@font/font_body_newfeed"
-                    android:gravity="end"
-                    android:text="10:05PM"
-                    android:textColor="@color/gray"
-                    android:textSize="14sp" />
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_name"
+                        android:text="Vu Anh Levis"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="@font/font_body_newfeed"
+                        android:gravity="left"
+                        android:text="10:05PM"
+                        android:textColor="@color/gray"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iv_rank"
+                    android:layout_width="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/rank1"
+                    android:layout_height="40dp" />
+
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginLeft="5dp"
-                android:id="@+id/rl_error"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/tv_error"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/iv_err"
-                    android:layout_alignParentLeft="true"
-                    android:text="oi that la ghe" />
-
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/iv_err"
-                        android:layout_gravity="center"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@id/iv_up"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/ic_error_text" />
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/iv_up"
-                        android:layout_gravity="center"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="10dp"
+                        android:layout_gravity="center"
                         android:background="@drawable/ic_sort_up" />
+
+                    <TextView
+                        android:id="@+id/tv_numVote"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="-45"
+                        android:textColor="@color/green"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_down"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_sort_down" />
+
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-            </LinearLayout>
 
-            <!--<RelativeLayout-->
-                <!--android:layout_marginLeft="5dp"-->
-                <!--android:id="@+id/rl_error"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content">-->
+                    <LinearLayout
+                        android:id="@+id/rl_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal">
 
-                <!--<TextView-->
+                        <TextView
+                            android:id="@+id/tv_error"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@id/iv_err"
+                            android:layout_alignParentLeft="true"
+                            android:layout_weight="1"
+                            android:text="oi that la ghe" />
+
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/iv_err"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_centerVertical="true"
+                                android:layout_gravity="center"
+                                android:layout_marginRight="10dp"
+                                android:layout_toLeftOf="@id/iv_up"
+                                android:background="@drawable/ic_error_text" />
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <!--<RelativeLayout-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:id="@+id/rl_error"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content">-->
+
+                    <!--<TextView-->
                     <!--android:id="@+id/tv_error"-->
                     <!--android:gravity="center"-->
                     <!--android:layout_width="wrap_content"-->
@@ -118,7 +181,7 @@
                     <!--android:layout_alignParentLeft="true"-->
                     <!--android:text="oi that la ghe" />-->
 
-                <!--<ImageView-->
+                    <!--<ImageView-->
                     <!--android:id="@+id/iv_err"-->
                     <!--android:layout_width="15dp"-->
                     <!--android:layout_height="15dp"-->
@@ -127,7 +190,7 @@
                     <!--android:layout_marginRight="10dp"-->
                     <!--android:background="@drawable/ic_error_text" />-->
 
-                <!--<ImageView-->
+                    <!--<ImageView-->
                     <!--android:id="@+id/iv_up"-->
                     <!--android:layout_width="30dp"-->
                     <!--android:layout_height="30dp"-->
@@ -139,106 +202,62 @@
                     <!--android:background="@drawable/ic_sort_up" />-->
 
 
+                    <!--</RelativeLayout>-->
 
-            <!--</RelativeLayout>-->
+                    <LinearLayout
+                        android:id="@+id/rl_correct"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_marginLeft="5dp"
-                android:id="@+id/rl_correct"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tv_correct"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@id/iv_correct"
+                            android:layout_alignParentLeft="true"
+                            android:layout_weight="1"
+                            android:text="t6hat la ghe qua dim a" />
 
-                <TextView
-                    android:layout_weight="1"
-                    android:id="@+id/tv_correct"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/iv_correct"
-                    android:layout_alignParentLeft="true"
-                    android:text="t6hat la ghe qua dim a" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
+                            <ImageView
+                                android:id="@+id/iv_correct"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_centerVertical="true"
+                                android:layout_gravity="center"
+                                android:layout_marginRight="10dp"
+                                android:layout_toLeftOf="@id/iv_down"
+                                android:background="@drawable/ic_correct_text" />
 
-                    <ImageView
-                        android:id="@+id/iv_correct"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@id/iv_down"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/ic_correct_text" />
 
-                    <ImageView
-                        android:id="@+id/iv_down"
-                        android:layout_gravity="center"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/ic_sort_down" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_content"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="khiep vai ca chuong"
+                        android:textColor="@color/dark_gray" />
+
 
                 </LinearLayout>
 
+
             </LinearLayout>
-
-            <!--<RelativeLayout-->
-                <!--android:id="@+id/rl_correct"-->
-                <!--android:layout_marginLeft="5dp"-->
-                <!--android:gravity="center"-->
-                <!--android:layout_gravity="center"-->
-
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content">-->
-
-                <!--<TextView-->
-                    <!--android:id="@+id/tv_correct"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignLeft="@id/iv_correct"-->
-                    <!--android:layout_alignParentLeft="true"-->
-                    <!--android:text="t6hat la ghe qua dim a" />-->
-
-                <!--<ImageView-->
-                    <!--android:id="@+id/iv_correct"-->
-                    <!--android:layout_width="15dp"-->
-                    <!--android:layout_height="15dp"-->
-                    <!--android:layout_centerVertical="true"-->
-                    <!--android:layout_toLeftOf="@id/iv_down"-->
-                    <!--android:layout_marginRight="10dp"-->
-                    <!--android:background="@drawable/ic_correct_text" />-->
-
-                <!--<ImageView-->
-                    <!--android:id="@+id/iv_down"-->
-                    <!--android:layout_width="30dp"-->
-                    <!--android:layout_height="30dp"-->
-                    <!--android:layout_alignParentTop="true"-->
-                    <!--android:layout_alignParentEnd="true"-->
-                    <!--android:layout_alignParentRight="true"-->
-                    <!--android:layout_centerVertical="true"-->
-                    <!--android:layout_marginRight="10dp"-->
-                    <!--android:background="@drawable/ic_sort_down" />-->
-
-            <!--</RelativeLayout>-->
-
-            <TextView
-                android:layout_marginLeft="5dp"
-
-                android:id="@+id/tv_content"
-                android:textColor="@color/dark_gray"
-                android:text="khiep vai ca chuong"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
 
         </LinearLayout>
+
 
     </LinearLayout>
 

@@ -4,22 +4,34 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.kda.kdatalk.R;
+import com.kda.kdatalk.model.NewFeed;
 import com.kda.kdatalk.ui.base.ActivityBase;
 import com.kda.kdatalk.ui.main.newfeed.addnewfeed.adapter.GridAdapter;
+import com.kda.kdatalk.ui.widget.ProgressView;
+import com.kda.kdatalk.utils.DraffKey;
+import com.kda.kdatalk.utils.MyCache;
+import com.kda.kdatalk.utils.UtilLibs;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -28,12 +40,13 @@ public class AddNewFeedActivity extends ActivityBase implements AddNewFeedView {
 
     private static final int PICK_IMAGE = 10;
     private static final int SPEECH_2_TEXT = 11;
+    private static final String TAG = AddNewFeedActivity.class.getSimpleName();
 
     @BindView(R.id.gv_addImage)
     GridView gv_addImage;
 
     @BindView(R.id.progress_bar)
-    ProgressBar progressBar;
+    ProgressView progressBar;
 
     @BindView(R.id.iv_addImage)
     ImageView iv_addImage;
@@ -48,6 +61,7 @@ public class AddNewFeedActivity extends ActivityBase implements AddNewFeedView {
     EditText et_content;
 
     AddNewFeedPresenter newFeedPresenter;
+    ArrayList<String> arr_base64 = new ArrayList<>();
 
     //    List<Bitmap> bitmapList = new ArrayList<>();
     List<String> listUrl = new ArrayList<>();
@@ -101,6 +115,39 @@ public class AddNewFeedActivity extends ActivityBase implements AddNewFeedView {
                 onBackPressed();
 
             case R.id.tv_action:
+
+                showProgress();
+
+                String content = et_content.getText().toString().trim();
+
+                if (content.isEmpty()) {
+                    UtilLibs.showAlert(AddNewFeedActivity.this, "Bạn chưa nhập thông tin!");
+                    return;
+                }
+
+                for (int i = 0; i < listUrl.size(); i ++ ) {
+//                    Log.e(TAG, "clickAction: " + listUrl.get(i));
+                    arr_base64.add(newFeedPresenter.convertImageToByte(listUrl.get(i)));
+                }
+
+//
+                String accessToken = MyCache.getInstance().getString(DraffKey.accessToken);
+
+                JSONObject ob = new JSONObject();
+                try {
+//                    ob.put("accessToken", accessToken);
+                    ob.put("content", content);
+                    JSONArray arr= new JSONArray(arr_base64);
+                    ob.put("list_image", arr);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //
+
+                Log.e(TAG, "clickAction: DATA_SEND" + ob.toString() );
+
+                newFeedPresenter.addNewFeed(ob, accessToken);
                 break;
             default:
                 break;
@@ -118,6 +165,20 @@ public class AddNewFeedActivity extends ActivityBase implements AddNewFeedView {
     public void hideProgress() {
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onAddSuccess(boolean isSuccess, String message) {
+
+        hideProgress();
+
+        if (isSuccess) {
+            //
+            Toast.makeText(this, "Đăng bài thành công!", Toast.LENGTH_SHORT).show();
+            onBackPressed();
+        } else {
+            UtilLibs.showAlert(this, message);
         }
     }
 

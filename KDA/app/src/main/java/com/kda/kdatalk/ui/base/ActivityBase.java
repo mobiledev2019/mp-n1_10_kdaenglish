@@ -2,9 +2,9 @@ package com.kda.kdatalk.ui.base;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -43,7 +43,7 @@ public class ActivityBase extends AppCompatActivity {
     private void applicationWillEnterForeground() {
         if (isAppWentToBg) {
             isAppWentToBg = false;
-            Log.e(TAG, "applicationWillEnterForeground: ");
+//            Log.e(TAG, "applicationWillEnterForeground: ");
         }
     }
 
@@ -51,8 +51,8 @@ public class ActivityBase extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        Log.e(TAG, "onStop ");
-        applicationdidenterbackground();
+//        Log.e(TAG, "onStop ");
+//        applicationdidenterbackground();
 
     }
 
@@ -89,7 +89,7 @@ public class ActivityBase extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: ");
+//        Log.e(TAG, "onResume: ");
 
     }
 
@@ -108,7 +108,7 @@ public class ActivityBase extends AppCompatActivity {
     public User getUserCache() {
         try {
 
-            return new Gson().fromJson(MyCache.getInstance().getString(DraffKey.user), User.class);
+            return new Gson().fromJson(MyCache.getInstance().getString(DraffKey.user_info), User.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -196,6 +196,13 @@ public class ActivityBase extends AppCompatActivity {
 //        } catch (Exception e) {
 //
 //        }
+    }
+
+
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
     }
 
 

@@ -8,6 +8,8 @@ public class MessageModel {
     public String last_str;
     public String last_time;
 
+    public boolean seen;
+
 
     public MessageModel(String id, User user, String last_str, String last_time) {
         this.id = id;

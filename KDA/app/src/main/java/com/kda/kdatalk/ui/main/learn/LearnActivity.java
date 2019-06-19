@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,9 +28,11 @@ import com.kda.kdatalk.R;
 import com.kda.kdatalk.databinding.ActivityLearnBinding;
 import com.kda.kdatalk.model.learn.VocabModel;
 import com.kda.kdatalk.ui.base.ActivityBase;
+import com.kda.kdatalk.utils.UtilLibs;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -36,6 +40,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -63,6 +68,9 @@ public class LearnActivity extends ActivityBase implements LearnView {
     ActivityLearnBinding binding;
     ActivityBase mContext;
 
+
+    MediaPlayer mPlayer;
+
     LearnPresenter presenter;
     int curr_score = 0;
 
@@ -83,9 +91,18 @@ public class LearnActivity extends ActivityBase implements LearnView {
         ButterKnife.bind(this);
         mContext = this;
 
+        mPlayer = new MediaPlayer();
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         id_lesson = getIntent().getStringExtra(ID_LESSON);
         presenter = new LearnPresenterImpl(this, this);
 
+//        mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mp) {
+//
+//            }
+//        });
 
         setupData();
 //        Log.e(TAG, "onCreate: " + id_lesson);
@@ -96,6 +113,25 @@ public class LearnActivity extends ActivityBase implements LearnView {
     private void setupData() {
 
         listVocab = presenter.getListVocab(id_lesson);
+
+        if (listVocab != null) {
+            try {
+                mPlayer.setDataSource(listVocab.get(0).url_voice);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                //
+                enableClick();
+
+            }
+        });
+
 
         tv_score.setText("0");
 
@@ -147,6 +183,9 @@ public class LearnActivity extends ActivityBase implements LearnView {
                         Log.e(TAG, "onTouch: " + outputFile);
                         convertTobase64(outputFile);
                         showProgress();
+
+                        presenter.sendVoiceVocab(listVocab.get(curr_position).id, str_base64_record);
+
                         listVocab.get(curr_position).point = presenter.getScore(listVocab.get(curr_position).id);
                         listVocab.get(curr_position).isComplete = true;
 
@@ -224,6 +263,14 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
             case R.id.iv_next:
                 curr_position++;
+
+                if (curr_position < listVocab.size()) {
+                    try {
+                        mPlayer.setDataSource(listVocab.get(curr_position).url_voice);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 setUpDataview();
                 Log.e(TAG, "clickView: " + "click Next");
                 break;
@@ -232,9 +279,25 @@ public class LearnActivity extends ActivityBase implements LearnView {
             case R.id.iv_listen:
                 dissableClick();
 
+                if (mPlayer != null) {
+                    mPlayer.stop();
+                    mPlayer.release();
+                    mPlayer.reset();
+                }
+
+                try {
+                    mPlayer.setDataSource("https://soundcloud.com/v-anh-levis/2018-01-30-152725a");
+                    mPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+//                mPlayer.start();
+
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+
                         enableClick();
                     }
                 }, 2000);
@@ -283,6 +346,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
             binding.ivNext.setVisibility(model.isComplete ? View.VISIBLE : View.GONE);
         } else {
             binding.ivNext.setVisibility(View.GONE);
+            // done
         }
 
         String vocab = model.vocab;
@@ -300,6 +364,12 @@ public class LearnActivity extends ActivityBase implements LearnView {
         curr_score += model.point;
         tv_score.setText(String.valueOf(curr_score));
 
+        if (listVocab.get(listVocab.size() - 1).isComplete) {
+            // done -> show dialog
+
+            UtilLibs.showAlert(mContext, "Bạn đã hoàn thành bài học với số điểm là " + curr_score + "/" + listVocab.size() * 100);
+
+        }
 
     }
 
@@ -327,6 +397,28 @@ public class LearnActivity extends ActivityBase implements LearnView {
     public void hideProgress() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         binding.progressBar.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void getListVocabSuccess(ArrayList<VocabModel> list_vocab) {
+
+        this.listVocab = list_vocab;
+
+    }
+
+    @Override
+    public void onError(String mess) {
+
+    }
+
+    @Override
+    public void getScoreSuccess(boolean isSuccess, int score) {
+        // have score
+        listVocab.get(curr_position).point = score;
+        listVocab.get(curr_position).isComplete = true;
+
+        setUpDataview();
 
     }
 

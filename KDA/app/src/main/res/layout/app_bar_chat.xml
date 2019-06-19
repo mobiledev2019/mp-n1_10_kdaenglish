@@ -35,7 +35,7 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/iv_ava"
             android:fontFamily="@font/font_name"
-            android:text="Vu Co"
+            android:text="KDA"
             android:textColor="@color/white" />
 
         <ImageView

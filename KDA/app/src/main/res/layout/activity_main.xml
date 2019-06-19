@@ -17,22 +17,40 @@
             android:layout_marginBottom="50dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+        <!--<androidx.cardview.widget.CardView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true">-->
+
+
+            <!--<com.google.android.material.bottomnavigation.BottomNavigationView-->
+                <!--android:id="@+id/nav_bar"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:background="@color/white"-->
+                <!--app:itemTextColor="@color/blue"-->
+                <!--app:labelVisibilityMode="unlabeled"-->
+                <!--app:menu="@menu/menu_home">-->
+
+            <!--</com.google.android.material.bottomnavigation.BottomNavigationView>-->
+
+        <!--</androidx.cardview.widget.CardView>-->
+
         <androidx.cardview.widget.CardView
+            android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
+            android:layout_height="wrap_content">
 
-
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/nav_bar"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/white"
-                app:itemTextColor="@color/blue"
-                app:labelVisibilityMode="unlabeled"
-                app:menu="@menu/menu_home">
+                android:layout_height="50dp">
+                <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+                    android:id="@+id/ah_bottom_nav"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            </com.google.android.material.bottomnavigation.BottomNavigationView>
+                </com.aurelhubert.ahbottomnavigation.AHBottomNavigation>
+            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 

@@ -1,6 +1,7 @@
 package com.kda.kdatalk.ui.main.newfeed.viewcontent.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kda.kdatalk.R;
 import com.kda.kdatalk.ui.base.ActivityBase;
@@ -19,6 +21,7 @@ import com.kda.kdatalk.ui.base.FragmentBase;
 import com.kda.kdatalk.ui.main.newfeed.viewcontent.Fragment_Create_CommentView;
 import com.kda.kdatalk.ui.main.newfeed.viewcontent.ViewContentNewFeedActivity;
 import com.kda.kdatalk.ui.main.newfeed.viewcontent.ViewContentPresenter;
+import com.kda.kdatalk.utils.AppConstants;
 import com.kda.kdatalk.utils.UtilLibs;
 import com.pixplicity.htmlcompat.HtmlCompat;
 
@@ -28,6 +31,7 @@ import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -80,6 +84,7 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
         super.onAttach(context);
         mContext = (ActivityBase) context;
         viewContentPresenter = ((ViewContentNewFeedActivity) mContext).getPresenter();
+        viewContentPresenter.setFragment(this);
     }
 
     @NonNull
@@ -91,7 +96,6 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tv_title.setText("Viết bình luận");
 //        runnable = new Runnable() {
 //            @Override
 //            public void run() {
@@ -123,8 +127,11 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
                 content_fix = bundle.getString(CONTENT_FIX);
                 //fake
 
-                content_fix = "what are this shit bro?";
+//                content_fix = "what are this shit bro?";
             }
+
+            tv_title.setText("Viết bình luận");
+
         } catch (Exception e) {
 
         }
@@ -137,7 +144,7 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
         addListener();
     }
 
-    @OnClick({R.id.iv_back})
+    @OnClick({R.id.iv_back, R.id.tv_action})
     public void clickView(View v) {
         switch (v.getId()) {
             case R.id.iv_back:
@@ -157,9 +164,33 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
                 });
                 break;
 
+            case R.id.tv_action:
+
+                if (validate()) {
+
+                    if (str_change != null && str_change.size() > 0) {
+
+                        viewContentPresenter.postComment(et_comment.getText().toString().trim(), str_change.get(0), str_change.get(1), id_feed);
+                    } else {
+                        viewContentPresenter.postComment(et_comment.getText().toString().trim(), "", "", id_feed);
+
+                    }
+
+
+                } else {
+                    UtilLibs.showAlert(mContext, "Bạn chưa nhập nội dung!");
+                }
+
+                break;
+
             default:
                 break;
         }
+    }
+
+    private boolean validate() {
+
+        return !et_comment.getText().toString().trim().isEmpty();
     }
 
 
@@ -168,6 +199,8 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
         et_correct.setText(content_fix);
 
     }
+
+    ArrayList<String> str_change = new ArrayList<>();
 
     private void addListener() {
 
@@ -192,7 +225,7 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            ArrayList<String> str_change = new ArrayList<>();
+                            str_change.clear();
                             str_change = UtilLibs.compare2String(content_fix, et_correct.getText().toString());
                             //
                             Spanned fromHtml_err = HtmlCompat.fromHtml(mContext, str_change.get(0), 0);
@@ -234,11 +267,19 @@ public class CreateCommentFragment extends FragmentBase implements Fragment_Crea
 
     @Override
     public void onSuccess() {
+        // create comment success
+        Toast.makeText(mContext, "Viết bình luận thành công!", Toast.LENGTH_SHORT).show();
+//
+//        Intent intent = new Intent(AppConstants.RELOAD);
+//
+//        mContext.sendBroadcast(intent);
+
+        getActivity().onBackPressed();
 
     }
 
     @Override
     public void onError(String err) {
-
+        UtilLibs.showAlert(mContext, err);
     }
 }

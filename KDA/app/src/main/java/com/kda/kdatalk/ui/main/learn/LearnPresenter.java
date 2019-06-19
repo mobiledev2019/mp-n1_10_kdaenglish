@@ -9,4 +9,6 @@ public interface LearnPresenter {
 
     int getScore(String id_vocab);
 
+    void sendVoiceVocab(String id_vocab, String base64);
+
 }

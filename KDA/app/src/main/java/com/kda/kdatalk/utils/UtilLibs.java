@@ -2,12 +2,15 @@ package com.kda.kdatalk.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.kda.kdatalk.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class UtilLibs {
 
@@ -118,6 +121,30 @@ public class UtilLibs {
                     listenerAlert.cancel();
                 })
                 .show();
+    }
+
+    public static void showAlert(Context context, String message) {
+        new AlertDialog.Builder(context)
+                .setTitle("Thông báo!")
+                .setMessage(message)
+
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Continue with delete operation
+                    }
+                })
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .show();
+    }
+
+    public static String getDate(long milliSeconds, String dateFormat) {
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return formatter.format(calendar.getTime());
     }
 
 }

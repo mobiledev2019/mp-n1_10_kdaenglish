@@ -7,11 +7,11 @@ public class APIUtils {
     private APIUtils() {
     }
 
-    public static final String BASE_URL = URL_SERVER_KDA;// url server
+//    public static final String BASE_URL = URL_SERVER_KDA;// url server
 
     public static ServiceFunction getAPIService() {
 
-        return RetrofitClient.getClient(BASE_URL).create(ServiceFunction.class);
+        return RetrofitClient.getClient(URL_SERVER_KDA).create(ServiceFunction.class);
     }
 
 }

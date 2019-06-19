@@ -4,16 +4,16 @@ import com.kda.kdatalk.model.User;
 
 public class ChatModel {
     public String id;
-    public User user;
-    public User user_2;
+    public String id_user;
     public String content;
-    public boolean isMe;
 
-    public ChatModel(String id, User user, String content, boolean isMe) {
+    public boolean isSuccess;
+    public boolean isSending = false;
+
+    public ChatModel(String id, String id_user, String content) {
         this.id = id;
-        this.user = user;
+        this.id_user = id_user;
         this.content = content;
-        this.isMe = isMe;
     }
 
     public ChatModel() {

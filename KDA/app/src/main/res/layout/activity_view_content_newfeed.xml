@@ -10,11 +10,11 @@
     android:orientation="vertical">
 
     <FrameLayout
+        android:id="@+id/viewContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ScrollView
             android:id="@+id/scr_main"
-            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -57,7 +57,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/font_name"
-                                android:text="Vu Anh Levis"
+                                android:text="KDA"
                                 android:textColor="@color/black"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
@@ -93,7 +93,7 @@
                             android:layout_margin="10dp"
                             android:layout_marginBottom="5dp"
                             android:fontFamily="@font/font_body_newfeed"
-                            android:text="@string/lorem"
+                            android:text=""
                             android:textColor="@color/blue_black_dark"
                             android:textSize="13sp" />
 
@@ -216,12 +216,23 @@
             layout="@layout/layout_comment"/>
     </FrameLayout>
 
-    <ProgressBar
+    <com.kda.kdatalk.ui.widget.ProgressView
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:foregroundGravity="center"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_errhappend"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Đã có lỗi xảy ra"
+        android:textStyle="italic"
+        android:textColor="@color/gray"
+        android:layout_height="match_parent" />
 
 </FrameLayout>

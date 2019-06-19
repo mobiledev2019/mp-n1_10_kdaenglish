@@ -18,6 +18,8 @@ import com.kda.kdatalk.ui.main.newfeed.addnewfeed.AddNewFeedActivity;
 import com.kda.kdatalk.ui.main.newfeed.adapter.newfeed.NewFeedAdapter;
 import com.kda.kdatalk.ui.main.newfeed.adapter.newfeed.NewFeedClickListener;
 import com.kda.kdatalk.ui.main.newfeed.viewcontent.ViewContentNewFeedActivity;
+import com.kda.kdatalk.ui.widget.ProgressView;
+import com.kda.kdatalk.utils.UtilLibs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -41,7 +45,10 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
     @BindView(R.id.rv_newfeed)
     RecyclerView rv_newFeed;
     @BindView(R.id.progress_bar)
-    ProgressBar progressBar;
+    ProgressView progressBar;
+
+    @BindView(R.id.sw_refresh)
+    SwipeRefreshLayout swip_refresh;
 
     NewFeedPresenter newFeedPresenter;
     NewFeedAdapter adapter;
@@ -84,16 +91,24 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         newFeedPresenter = new NewFeedPresenterImpl(mContext, this);
-        listNewFeed = newFeedPresenter.getNewFeed();
+        newFeedPresenter.getNewFeed(currPage);
     }
+
+    public static int currPage = 1;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new NewFeedAdapter(listNewFeed, mContext, new NewFeedClickListener() {
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext);
+        rv_newFeed.setLayoutManager(mLayoutManager);
+        rv_newFeed.setHasFixedSize(true);
+
+        adapter = new NewFeedAdapter(listNewFeed, rv_newFeed, mContext, new NewFeedClickListener() {
             @Override
-            public void onClickLike(int position, String id_feed) {
+            public void onClickLike(int position, String id_feed, boolean isLike) {
                 // call api
+                newFeedPresenter.onActionLike(isLike, id_feed);
                 Log.e(TAG, "onClickLike: " + id_feed);
             }
 
@@ -118,13 +133,34 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
             public void onClickViewImage(int position_item, int position_image, String id_feed) {
 
                 // click view Image
-                changeFragment(R.id.viewMain,ViewImageFragment.newInstance(listNewFeed.get(position_item).list_image, position_image),true);
+                changeFragment(R.id.viewMain, ViewImageFragment.newInstance(listNewFeed.get(position_item).list_image, position_image), true);
             }
         });
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext);
-        rv_newFeed.setLayoutManager(mLayoutManager);
+        adapter.setOnLoadMore(new NewFeedAdapter.OnLoadMore() {
+            @Override
+            public void onLoad() {
+                listNewFeed.add(null);
+                adapter.notifyDataSetChanged();
+                newFeedPresenter.getNewFeed(currPage);
+            }
+        });
+
         rv_newFeed.setAdapter(adapter);
+
+        // refresh
+
+        swip_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // do get data -> refresh
+                currPage = 1;
+                listNewFeed.clear();
+                newFeedPresenter.getNewFeed(currPage);
+                adapter.notifyDataSetChanged();
+
+            }
+        });
     }
 
     @OnClick(R.id.fb_add_feed)
@@ -146,6 +182,55 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
 
+        }
+    }
+
+    @Override
+    public void getFeedSuccess(ArrayList<NewFeed> list_feed) {
+        adapter.setIsloading(false);
+
+        if (currPage == 1) {
+            listNewFeed.clear();
+        }
+
+        currPage++;
+
+        if (listNewFeed.size()> 0) {
+            listNewFeed.remove(listNewFeed.size()-1);
+        }
+
+        listNewFeed.addAll(list_feed);
+        Log.e(TAG, "getFeedSuccess: " + listNewFeed.size());
+        adapter.setList_data(listNewFeed);
+
+        adapter.notifyDataSetChanged();
+
+        try {
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            });
+
+        }catch (Exception e) {
+
+        }
+
+        if (swip_refresh.isRefreshing()) {
+            swip_refresh.setRefreshing(false);
+        }
+
+    }
+
+
+    @Override
+    public void onError(String message) {
+        UtilLibs.showAlert(mContext, message);
+
+        if (swip_refresh.isRefreshing()) {
+            swip_refresh.setRefreshing(false);
         }
     }
 }

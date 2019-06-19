@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <FrameLayout
+        android:id="@+id/viewMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -26,27 +27,29 @@
                 app:cardElevation="22dp">
 
                 <TextView
-                    android:fontFamily="@font/font_family"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="60dp"
-                    android:textStyle="bold|italic"
+                    android:fontFamily="@font/font_family"
                     android:text="@string/login_kdatalk"
-                    android:textSize="25sp" />
+                    android:textSize="25sp"
+                    android:textStyle="bold|italic" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_margin="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginRight="20dp"
                     android:orientation="vertical">
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/email"
+                        android:hint="@string/username"
                         android:textColorHint="@color/gray">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -56,7 +59,7 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/input_border_bottom"
                             android:cursorVisible="true"
-                            android:gravity="center|left|bottom"
+                            android:gravity="center|left"
                             android:inputType="textEmailAddress"
                             android:maxLength="50"
                             android:paddingBottom="10dp"
@@ -81,7 +84,7 @@
                             android:layout_marginTop="30dp"
                             android:background="@drawable/input_border_bottom"
                             android:cursorVisible="true"
-                            android:gravity="center|left|bottom"
+                            android:gravity="center|left"
                             android:inputType="textPassword"
                             android:maxLength="50"
                             android:paddingBottom="10dp"
@@ -90,56 +93,42 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
+                        android:text="@string/forgot_password"
+                        android:textColor="@color/gray"
+                        android:textStyle="italic" />
+
                     <Button
                         android:id="@+id/btnServerLogin"
-                        style="@style/Button.Primary"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_margin="15dp"
-                        android:padding="10dp"
-                        android:text="@string/login"
-                        android:textSize="18dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center"
-                    android:layout_marginBottom="40dp"
-                    android:orientation="horizontal">
+                        android:background="@drawable/bg_bt_login"
+                        android:paddingLeft="30dp"
+                        android:paddingRight="30dp"
+                        android:text="ĐĂNG NHẬP"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
 
 
-                    <ImageButton
-                        android:id="@+id/ibGoogleLogin"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@color/transparent"
-                        android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/ic_google_plus" />
-
-
-                    <ImageButton
-                        android:id="@+id/ibFbLogin"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginLeft="24dp"
-                        android:background="@color/transparent"
-                        android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/ic_facebook" />
-
-                    <com.facebook.login.widget.LoginButton
-                        android:id="@+id/facebookButton"
-                        style="@style/FacebookLoginButton"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginLeft="24dp"
-                        android:background="@color/transparent"
-                        android:scaleType="centerCrop"
-                        android:visibility="gone" />
-
+                    <TextView
+                        android:id="@+id/tv_register"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="@string/register"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
+
             </androidx.cardview.widget.CardView>
 
         </RelativeLayout>
@@ -153,6 +142,13 @@
             android:visibility="gone" />
 
     </FrameLayout>
+
+    <com.kda.kdatalk.ui.widget.ProgressView
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
 
 </RelativeLayout>

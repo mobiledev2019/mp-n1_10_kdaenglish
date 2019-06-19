@@ -1,65 +1,60 @@
 package com.kda.kdatalk.ui.main.newfeed.viewcontent;
 
+import android.util.Log;
+
 import com.kda.kdatalk.R;
 import com.kda.kdatalk.model.Comment;
 import com.kda.kdatalk.model.NewFeed;
 import com.kda.kdatalk.model.User;
 import com.kda.kdatalk.network.APIUtils;
+import com.kda.kdatalk.network.ServiceConst;
 import com.kda.kdatalk.network.ServiceFunction;
 import com.kda.kdatalk.ui.base.ActivityBase;
 import com.kda.kdatalk.utils.AppConstants;
+import com.kda.kdatalk.utils.DraffKey;
+import com.kda.kdatalk.utils.MyCache;
+import com.kda.kdatalk.utils.MyGson;
+import com.kda.kdatalk.utils.UtilLibs;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 import androidx.fragment.app.Fragment;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ViewContentPresenterImpl implements ViewContentPresenter {
+    private static final String TAG = ViewContentPresenterImpl.class.getSimpleName();
     ViewContentView viewContentView;
     Fragment_Create_CommentView fragment_create_commentView;
     ActivityBase mContext;
 
     ServiceFunction serviceFunction;
 
+    String accessToken = "";
+
+
     public ViewContentPresenterImpl(ViewContentView viewContentView, ActivityBase mContext) {
         this.viewContentView = viewContentView;
         this.mContext = mContext;
+        serviceFunction = APIUtils.getAPIService();
+        accessToken = MyCache.getInstance().getString(DraffKey.accessToken);
+
     }
 
     @Override
-    public NewFeed getDetailNF(String id_feed) {
+    public void getDetailNF(String id_feed) {
 
-        viewContentView.showProgress();
-
-        String user_url = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/49467888_2205492239691741_6073977895720583168_n.jpg?_nc_cat=105&_nc_oc=AQlnAq4gT6wf3cNlgYB9IxfdPQVBwZR4vbVsmJilJ4gZ_7JAweGQnJAnzzuxiBzQyEA&_nc_ht=scontent.fhan2-4.fna&oh=da1c461ab945159660b34e6566c33504&oe=5D09D1E9";
-        String user_url2 = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/56268549_343887426240652_7399425397634367488_n.jpg?_nc_cat=104&_nc_oc=AQlMvjFKX_eDQ6wVSdHzEbVadlDgYJVJRIZ-wralDDZPtwIjdcvOmEQAZOBrocKJB1mAgGMuLbiaJCaf_TApZwUc&_nc_ht=scontent.fhan2-4.fna&oh=253eab73429043cae685fcad7109d50b&oe=5D4B2FA1";
-
-
-        String image_url = "https://scontent.fhan2-1.fna.fbcdn.net/v/t1.0-9/56158387_101611001027293_8255895292965027840_n.jpg?_nc_cat=103&_nc_oc=AQkASbXBNAb56hFfOpABdQyzK1vcm2S3s_4DytI5ZcJaZ0K3Y1y07ORUF97Fxw39nWD6y8-KxFWMz7F-iySWKddF&_nc_ht=scontent.fhan2-1.fna&oh=49defd2df95e8ba6687d5e17c2a6c50e&oe=5D420FB6";
-        String image1 = "https://scontent.fhan2-3.fna.fbcdn.net/v/t1.0-9/26047171_1506922096094304_1165018699092051405_n.jpg?_nc_cat=109&_nc_oc=AQkKyOLhnfqK1xyu5WxF9_A1J3yblRHrbT2s9lrSaEKxPzsfw9ImTjXl5O_vW_UejklGpK0lkEcC2bap5C-ZQLeZ&_nc_ht=scontent.fhan2-3.fna&oh=57277c81b9232782d94ee79e20e02ec7&oe=5D424257";
-        String image2 = "https://scontent.fhan2-3.fna.fbcdn.net/v/t1.0-9/56757361_632639193846341_200543250094751744_n.jpg?_nc_cat=109&_nc_oc=AQm7VIHJ2N5jUdurQKWQr8VBpdgBN5PzFhl3KjXo63cgBHjLT0MTlYdeCWqvfvEytI9mCqnAfgGSWWaUwdDYi-Mj&_nc_ht=scontent.fhan2-3.fna&oh=dde031e9ac9405880341abd3014b5af5&oe=5D3C15C4";
-        String image3 = "https://scontent.fhan2-3.fna.fbcdn.net/v/t1.0-9/56842672_576861829475041_7200600430810759168_n.jpg?_nc_cat=108&_nc_oc=AQmuYDdOPvLGHO5w76p47DQqUjLmQ8DJeBlz1P9VTYr5A4kh3aiat8OM3Of_fMc8LPa5cysm7GcXHAKmCrsgftLA&_nc_ht=scontent.fhan2-3.fna&oh=5c2958d3ee7d34c517655c420d7a560d&oe=5D4C0984";
-        String image4 = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/57267578_450296289043650_6587918222140375040_n.jpg?_nc_cat=104&_nc_oc=AQnmUrJtdE-7tzLuKbaz8OIsU5aCsDrxRFcCUQELLTsgnfp-OPHwT0FqSGxmrChZTeUJEySq4Qv-A4hPyUSH5cy0&_nc_ht=scontent.fhan2-4.fna&oh=bf7d2e24a4d122af0ee0e9506e635af0&oe=5D383A79";
-        String image5 = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/57403848_688324381591192_4351470326673047552_n.jpg?_nc_cat=104&_nc_oc=AQmxx9e9lPd7WljKsWyOft8OWc8AdpPKYnTHjavBDXZ-L6d8AeyY6RaUV4vc1RVix9cqbbtsPhfOrz-ra1cOauZD&_nc_ht=scontent.fhan2-4.fna&oh=5eac18047fa21155e36b133e45d515d9&oe=5D481FE8";
-        String image6 = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/56723930_787300708311416_7176898434744451072_n.jpg?_nc_cat=100&_nc_oc=AQnv8i87Sj4Z-5zweGkq6hHlDOQwbMYpTZralYZ_5-bynUJOomQz1LZJGXZYbdyPYdl89n7SKNpvAXFlBiNLe0Ef&_nc_ht=scontent.fhan2-4.fna&oh=945ade0f489333ef1fa14898af5ce789&oe=5D744059";
-        //
-
-
-        // fake
-        String content = mContext.getResources().getString(R.string.lorem);
-
-        ArrayList<String> image = new ArrayList<>();
-        image.add(image1);
-        image.add(image2);
-        image.add(image3);
-        image.add(image_url);
-        image.add(image4);
-        image.add(image5);
-        image.add(image6);
-        image.add(user_url2);
         //String id, String content, String user_name, String user_url, List<String> list_image, String create_at, int num_like, int num_comment, boolean isLike
 //        list_data.add();
 //        list_data.add(new NewFeed("10001", content, "Khánh Nguyễn", image2, image, "1 September 2018", 10, 7, false));
@@ -69,67 +64,168 @@ public class ViewContentPresenterImpl implements ViewContentPresenter {
 
         // fake data
 
-        serviceFunction = APIUtils.getAPIService();
-        serviceFunction.getDetail("id_feed", "").enqueue(new Callback<String>() {
+        JSONObject send = new JSONObject();
+
+        try {
+            send.put("accessToken", accessToken);
+            send.put("id_feed", id_feed);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        viewContentView.showProgress();
+
+        String url = ServiceConst.URL_SERVER_KDA + ServiceConst.DETAIL + id_feed;
+
+        Log.e(TAG, "getDetailNF: URL" + url);
+
+        serviceFunction.getDetail(accessToken, url).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.e(TAG, "onResponse: " + response.body());
+
+                if (response.isSuccessful() && response.code() == 200) {
+                    try {
+
+                        NewFeed newFeed = new NewFeed();
+
+                        ArrayList<Comment> list_comment = new ArrayList<>();
+//                        JSONObject main = new JSONObject(response.body());
+                        JSONObject data = new JSONObject(response.body());
+                        String id = data.getString("_id");
+                        String content = data.getString("content");
+                        String create_at = data.getString("create_at");
+
+                        int num_like = data.getInt("num_like");
+                        int num_comment = data.getInt("num_comment");
+                        boolean isLike = data.getBoolean("isLike");
+
+                        // user newfeed
+
+//                        JSONObject user_nf = data.getJSONObject("user");
+//
+//                        User nf_user = new User();
+////                        JSONObject c_ob = user_nf.getJSONObject("user");
+//                        nf_user.email = user_nf.getString("email");
+//                        nf_user._id = user_nf.getString("id");
+//                        nf_user.address = user_nf.getString("address");
+//                        nf_user.name = c_ob.getString("name");
+//                        nf_user.url_img_ava = c_ob.getString("url_img_ava");
+//                        nf_user.url_img_cover = c_ob.getString("url_img_cover");
+
+
+                        //image
+
+
+                        JSONArray arr_image = data.getJSONArray("list_image");
+                        ArrayList<String> list_img = new ArrayList<>();
+
+                        if (arr_image != null && arr_image.length() > 0) {
+
+                            for (int j = 0; j < arr_image.length(); j++) {
+                                list_img.add(arr_image.getString(j));
+
+                            }
+
+                        }
+
+                        // user
+
+                        JSONObject ob_user = data.getJSONObject("user");
+
+                        String id_user = ob_user.getString("id");
+                        String email = ob_user.getString("email");
+                        String address = ob_user.getString("address");
+                        String name = ob_user.getString("name");
+                        String url_img_ava = ob_user.getString("url_img_ava");
+                        String url_img_cover = ob_user.getString("url_img_cover");
+//                            User user = new User(id_user, email, address, name, url_img_ava, url_img_cover);
+
+                        //comment
+
+                        JSONArray arr_comment = data.getJSONArray("comments");
+
+                        for (int i = 0; i < arr_comment.length(); i++) {
+                            JSONObject c = arr_comment.getJSONObject(i);
+
+                            String c_id = c.getString("_id");
+                            String c_content = c.getString("content");
+                            String c_create_at = c.getString("create_at");
+                            String err_text = c.getString("err_str");
+                            String corr_text = c.getString("corr_str");
+                            int numvote = c.getInt("num_vote");
+                            int isvote = c.getInt("isVote");
+
+                            User c_user = new User();
+                            JSONObject c_ob = c.getJSONObject("user");
+                            c_user.email = c_ob.getString("email");
+                            c_user._id = c_ob.getString("id");
+                            c_user.address = c_ob.getString("address");
+                            c_user.name = c_ob.getString("name");
+                            c_user.url_img_ava = c_ob.getString("url_img_ava");
+                            c_user.url_img_cover = c_ob.getString("url_img_cover");
+
+                            Comment cm;
+
+                            if (isvote == 0) {
+                                cm = new Comment(c_id, c_content, err_text, corr_text, c_user, c_create_at, numvote, false, false);
+                            } else if (isvote == 1) {
+                                cm = new Comment(c_id, c_content, err_text, corr_text, c_user, c_create_at, numvote, true, false);
+
+                            } else {
+                                cm = new Comment(c_id, c_content, err_text, corr_text, c_user, c_create_at, numvote, false, true);
+
+                            }
+
+                            list_comment.add(cm);
+
+//                            Log.e(TAG, "onResponse: ");
+
+                        }
+
+                        newFeed.id = id;
+                        newFeed.content = content;
+                        newFeed.user_name = name;
+                        newFeed.user_url = url_img_ava;
+                        newFeed.list_image = list_img;
+                        newFeed.create_at = create_at;
+                        newFeed.num_like = num_like;
+                        newFeed.num_comment = num_comment;
+                        newFeed.isLike = isLike;
+                        newFeed.list_comment = list_comment;
+
+
+                        viewContentView.getDetailSuccess(true, newFeed, "");
+
+
+                        viewContentView.hideProgress();
+
+//
+                    } catch (JSONException e) {
+
+                        viewContentView.getDetailSuccess(false, null, e.getMessage());
+                        e.printStackTrace();
+                    }
+
+
+                } else {
+                    //err
+                    viewContentView.getDetailSuccess(false, null, response.body());
+                    viewContentView.hideProgress();
+
+                }
                 //
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 //
+                viewContentView.getDetailSuccess(false, null, t.getMessage());
+                viewContentView.hideProgress();
+
             }
         });
-
-        //---------------------------
-
-        String htmt_str_err = "<span>There <span style=\"color:red\"><strike>is</strike></span> many chickens</span>";
-        String htmt_str_corr = "<span>There <span style=\"color:#30FF00\">is</span> many chickens</span>";
-//        String htmt_str_corr = "<p>Day la vi du ve the <span style=\"color:#30FF00\">the strike trong HTML</span></p>";
-
-        User user = new User(1, "100", "", "vuanhlevis@gmail.com", "BN", "Vũ Anh", image6, AppConstants.MODE_FACEBOOK);
-        Comment comment = new Comment("1", "ahihi do ngok", htmt_str_err, htmt_str_corr, user, "32min");
-
-        ArrayList<Comment> list_comment = new ArrayList<>();
-        list_comment.add(comment);
-
-        //
-        user = new User(1, "100", "", "vuanhlevis@gmail.com", "BN", "Mai Phạm", image2, AppConstants.MODE_FACEBOOK);
-        htmt_str_err = "<span>What <span style=\"color:red\"><strike>do</strike></span> you do yesterday?</span>";
-        htmt_str_corr = "<span>What <span style=\"color:#30FF00\">did</span> you do yesterday?</span>";
-        comment = new Comment("2", "ban sai roi", htmt_str_err, htmt_str_corr, user, "1hr");
-        //
-
-        list_comment.add(comment);
-
-        //
-        user = new User(1, "100", "", "vuanhlevis@gmail.com", "BN", "Hương Lùn", image5, AppConstants.MODE_FACEBOOK);
-        htmt_str_err = "<span>What <span style=\"color:red\"><strike>do</strike></span> you do yesterday?</span>";
-        htmt_str_corr = "<span>What <span style=\"color:#30FF00\">did</span> you do yesterday?</span>";
-        comment = new Comment("3", "this is correct answer", htmt_str_err, htmt_str_corr, user, "3hr");
-        //
-
-        list_comment.add(comment);
-
-        //
-        user = new User(1, "100", "", "vuanhlevis@gmail.com", "BN", "Đỗ Thị Trâm Anh", image4, AppConstants.MODE_FACEBOOK);
-        htmt_str_err = "<span>What <span style=\"color:red\"><strike>do</strike></span> you do yesterday?</span>";
-        htmt_str_corr = "<span>What <span style=\"color:#30FF00\">did</span> you do yesterday?</span>";
-        comment = new Comment("2", "Too easy =))", htmt_str_err, htmt_str_corr, user, "8hr");
-        //
-
-        list_comment.add(comment);
-
-        //--------------------------------
-
-        NewFeed newFeed = new NewFeed("10000", content, "Vũ Cơ", user_url, image, "1 September 2018", 69, 17, true,list_comment);
-
-
-
-        viewContentView.hideProgress();
-
-        return newFeed;
 
 
     }
@@ -142,8 +238,169 @@ public class ViewContentPresenterImpl implements ViewContentPresenter {
     }
 
     @Override
-    public void postComment(Comment comment, String id_feed) {
-        // postComment
+    public void postComment(String content, String err_str, String corr_str, String id_feed) {
+
+        User me = MyGson.getInstance().fromJson(MyCache.getInstance().getString(DraffKey.user_info), User.class);
+
+        Comment comment = new Comment();
+        comment.content = content;
+        comment.err_text = err_str;
+        comment.corr_text = corr_str;
+        comment.num_vote = 0;
+        comment.user = me;
+        comment.rank = 5;
+        comment.is_down = false;
+        comment.is_up = false;
+
+
+        long time = System.currentTimeMillis();
+
+        String format_date = "dd/MM/yyyy hh:mm:ss";
+
+        comment.timme = UtilLibs.getDate(time, format_date);
+
+        Log.e(TAG, "postComment: " + UtilLibs.getDate(time, format_date));
+
+        viewContentView.showProgress();
+        JSONObject send = new JSONObject();
+        try {
+//            send.put("accessToken", accessToken);
+            send.put("content", content);
+            send.put("err_str", err_str);
+            send.put("corr_str", corr_str);
+            send.put("id_feed", id_feed);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "postComment: " + send.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), send.toString());
+
+        serviceFunction.postComment(accessToken, requestBody).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Log.e(TAG, "onResponse: postComment " + response.body());
+                if (response.isSuccessful() && response.code() == 200) {
+                    fragment_create_commentView.onSuccess();
+                    viewContentView.hideProgress();
+                    viewContentView.createCommentSuccess(comment);
+
+                } else {
+                    viewContentView.hideProgress();
+
+                    fragment_create_commentView.onError(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                fragment_create_commentView.onError(t.getMessage());
+                viewContentView.hideProgress();
+
+            }
+        });
+
 
     }
+
+    @Override
+    public void voteNFup(boolean isUp, String id_comment) {
+
+//        viewContentView.showProgress();
+        JSONObject send = new JSONObject();
+        try {
+//            send.put("accessToken", accessToken);
+
+            if (isUp) {
+
+                send.put("isUp", 1);
+            } else {
+                send.put("isUp", 0);
+
+            }
+
+            send.put("id_comment", id_comment);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "voteNFup: " + send.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), send.toString());
+
+        serviceFunction.voteUpComment(accessToken, requestBody).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.e(TAG, "onResponse: voteUpComment" + response.body());
+//                if (response.isSuccessful() && response.code() == 200) {
+//                    fragment_create_commentView.onSuccess();
+//                    viewContentView.hideProgress();
+//
+//                } else {
+//                    viewContentView.hideProgress();
+//
+//                    fragment_create_commentView.onError(response.body());
+//                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+//                fragment_create_commentView.onError(t.getMessage());
+//                viewContentView.hideProgress();
+
+            }
+        });
+
+
+    }
+
+    @Override
+    public void voteNFdown(boolean isdown, String id_comment) {
+
+//        viewContentView.showProgress();
+        JSONObject send = new JSONObject();
+        try {
+            if (isdown) {
+                send.put("isDown", 1);
+
+            } else
+                send.put("isDown", 0);
+//            send.put("accessToken", accessToken);
+            send.put("id_comment", id_comment);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "voteNFdown: " + send.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), send.toString());
+
+        serviceFunction.voteDownComment(accessToken, requestBody).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.e(TAG, "onResponse: voteDownComment" + response.body());
+//                if (response.isSuccessful() && response.code() == 200) {
+//                    fragment_create_commentView.onSuccess();
+//                    viewContentView.hideProgress();
+//
+//                } else {
+//                    viewContentView.hideProgress();
+//
+//                    fragment_create_commentView.onError(response.body());
+//                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+//                fragment_create_commentView.onError(t.getMessage());
+//                viewContentView.hideProgress();
+
+            }
+        });
+
+    }
+
+
 }

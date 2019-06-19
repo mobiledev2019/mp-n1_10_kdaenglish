@@ -26,6 +26,7 @@
     <color name="navy_blue">#214258</color>
     <color name="navy_blue_dark">#1C3A4E</color>
     <color name="light_green">#78DC96</color>
+    <color name="green">#27DB2A</color>
     <color name="light_blue">#55C8F0</color>
     <color name="very_light_blue">#7481DEFF</color>
     <color name="blue_black_dark">#13171d</color>
@@ -36,8 +37,11 @@
     <color name="gray_icon">#C0CCDA</color>
     <color name="gray_dark">#454546</color>
     <color name="blue">#00A6FF</color>
+    <color name="blue_light">#7BC7F0</color>
     <color name="gray_listen">#cccccc</color>
 
+
+    <color name="blue_transparent">#4177C5F0</color>
 
     <color name="transparent_gray">#818B8B8B</color>
     <color name="transparent_gray_white">#408B8B8B</color>
@@ -45,5 +49,23 @@
     <color name="correct_str">#30FF00</color>
     <color name="error_str">#FF3000</color>
 
+
+    // color nav bar
+
+    <color name="nav_newfeed">#FFDACC</color>
+    <color name="nav_message">#FFFFFF</color>
+    <color name="nav_notification">#8AC8FA</color>
+    <color name="nav_learn">#6AF8E9</color>
+    <color name="nav_profile">#9EF5A1</color>
+    <color name="gray_transparent">#1E837E7E</color>
+
+    <color name="color_white_gray">#E4E2E2</color>
+    <color name="color_enable">#03A9F4</color>
+
+    //
+
+    <color name="turquoise_3">#2DCEB7</color>
+    <color name="turquoise_2">#009688</color>
+    <color name="turquoise_1">#1FBBA6</color>
 
 </resources>

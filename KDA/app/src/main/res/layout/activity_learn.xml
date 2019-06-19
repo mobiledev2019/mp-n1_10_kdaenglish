@@ -122,7 +122,7 @@
 
         </LinearLayout>
 
-        <ProgressBar
+        <com.kda.kdatalk.ui.widget.ProgressView
             android:id="@+id/progress_bar"
             android:visibility="gone"
             android:layout_width="wrap_content"

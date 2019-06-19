@@ -3,6 +3,7 @@ package com.kda.kdatalk.ui.main.newfeed.adapter.newfeed;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.kda.kdatalk.model.NewFeed;
 import com.kda.kdatalk.model.image.ItemImage;
 import com.kda.kdatalk.ui.base.BaseViewHolder;
 import com.kda.kdatalk.ui.main.newfeed.adapter.child.ImageAdapter;
+import com.kda.kdatalk.ui.main.notification.adapter.NotiAdapter;
+import com.kda.kdatalk.utils.MyGson;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -23,14 +26,23 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+    private int VIEW_TYPE_ITEM = 0, VIEW_TYPE_LOADING = 1;
 
+    private static final String TAG = NewFeedAdapter.class.getSimpleName();
     List<NewFeed> list_data;
 
     NewFeedClickListener listener;
+    OnLoadMore onLoadMore;
+
+    int visibleThreadHold = 1;
+    int lastVisibleItem, totalItem;
+    boolean isloading = false;
 
     Context context;
 
@@ -40,11 +52,55 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         this.context = context;
     }
 
+
+    public NewFeedAdapter(List<NewFeed> list_data, RecyclerView recyclerView, Context context, NewFeedClickListener listener) {
+        this.list_data = list_data;
+        this.listener = listener;
+        this.context = context;
+
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                totalItem = manager.getItemCount();
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+
+                if (!isloading && totalItem <= (lastVisibleItem + visibleThreadHold)) {
+                    if (onLoadMore != null) {
+                        onLoadMore.onLoad();
+                        Log.e(TAG, "onScrolled: " + "loadmore");
+                    }
+
+                    isloading = true;
+
+                }
+            }
+        });
+    }
+
+    public void setList_data(List<NewFeed> list_data) {
+        this.list_data = list_data;
+    }
+
     @NonNull
     @Override
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_newfeed, parent, false);
-        return new NewFeedHolder(view);
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_newfeed, parent, false);
+
+        View view;
+
+        if (viewType == VIEW_TYPE_ITEM) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_newfeed, parent, false);
+            return new NewFeedHolder(view);
+
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.kda_loadmore_layout, parent, false);
+            return new LoadMoreViewHolder(view);
+        }
+//        return new NewFeedHolder(view);
     }
 
     @Override
@@ -112,9 +168,14 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         @Override
         public void onBind(int position) {
             NewFeed newFeed = list_data.get(position);
+
+//            Log.e(TAG, "onBind: " + newFeed.list_image.get(0));
+
             tv_content.setText(newFeed.content);
             tv_name.setText(newFeed.user_name);
             tv_time.setText(newFeed.create_at);
+
+            Log.e(TAG, "onBind: " + newFeed.num_comment);
             tv_numComment.setText(String.valueOf(newFeed.num_comment));
             tv_numLike.setText(String.valueOf(newFeed.num_like));
 
@@ -157,6 +218,11 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
 
             //image
+//
+//            if (newFeed.user_url.isEmpty()) {
+//                newFeed.user_url = "null";
+//            }
+
             Picasso.get()
                     .load(newFeed.user_url)
                     .placeholder(R.drawable.user_no_img)
@@ -177,7 +243,8 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                         tv_numLike.setText(String.valueOf(newFeed.num_like));
 
                     }
-                    listener.onClickLike(position, newFeed.id);
+
+                    listener.onClickLike(position, newFeed.id, newFeed.isLike);
                 }
             });
 
@@ -195,7 +262,7 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                         tv_numLike.setText(String.valueOf(newFeed.num_like));
 
                     }
-                    listener.onClickLike(position, newFeed.id);
+                    listener.onClickLike(position, newFeed.id, newFeed.isLike);
                 }
             });
 
@@ -226,14 +293,14 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             iv_1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onClickViewImage(getAdapterPosition(), 0,list_data.get(getAdapterPosition()).id);
+                    listener.onClickViewImage(getAdapterPosition(), 0, list_data.get(getAdapterPosition()).id);
                 }
             });
 
             iv_2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onClickViewImage(getAdapterPosition(), 1,list_data.get(getAdapterPosition()).id);
+                    listener.onClickViewImage(getAdapterPosition(), 1, list_data.get(getAdapterPosition()).id);
 
                 }
             });
@@ -241,14 +308,14 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             iv_3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onClickViewImage(getAdapterPosition(), 2,list_data.get(getAdapterPosition()).id);
+                    listener.onClickViewImage(getAdapterPosition(), 2, list_data.get(getAdapterPosition()).id);
                 }
             });
 
             iv_transparent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onClickViewImage(getAdapterPosition(), 2,list_data.get(2).id);
+                    listener.onClickViewImage(getAdapterPosition(), 2, list_data.get(2).id);
 
                 }
             });
@@ -269,7 +336,7 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                 lnl_layout.setOrientation(LinearLayout.VERTICAL);
                 lnl_more.setVisibility(View.VISIBLE);
                 LinearLayout.LayoutParams params_iv1 = (LinearLayout.LayoutParams) iv_1.getLayoutParams();
-                params_iv1.setMargins(0,0,0,5);
+                params_iv1.setMargins(0, 0, 0, 5);
                 iv_1.setLayoutParams(params_iv1);
                 iv_3.setVisibility(View.GONE);
                 iv_transparent.setVisibility(View.GONE);
@@ -287,7 +354,7 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                         .into(iv_2);
 
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) iv_2.getLayoutParams();
-                params.setMargins(1,0,0,0);
+                params.setMargins(1, 0, 0, 0);
                 iv_2.setLayoutParams(params);
 
             } else if (size_img == 3) {
@@ -343,4 +410,38 @@ public class NewFeedAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         }
 
     }
+
+
+    private class LoadMoreViewHolder extends BaseViewHolder {
+
+        public LoadMoreViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void onBind(int position) {
+
+        }
+    }
+
+    public interface OnLoadMore {
+        void onLoad();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+//        return super.getItemViewType(position);
+        return list_data.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+
+    }
+
+
+    public void setOnLoadMore(OnLoadMore onLoadMore) {
+        this.onLoadMore = onLoadMore;
+    }
+
+    public void setIsloading(boolean isloading) {
+        this.isloading = isloading;
+    }
+
 }

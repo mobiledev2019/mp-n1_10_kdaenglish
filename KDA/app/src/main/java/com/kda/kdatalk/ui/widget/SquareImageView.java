@@ -8,7 +8,6 @@ import android.widget.ImageView;
 @SuppressLint("AppCompatCustomView")
 public class SquareImageView extends ImageView {
 
-
     public SquareImageView(final Context context)
     {
         super(context);

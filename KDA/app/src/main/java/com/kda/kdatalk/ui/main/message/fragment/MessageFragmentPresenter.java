@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface MessageFragmentPresenter {
     ArrayList<MessageModel> getListContact();
-    ArrayList<MessageModel> getListContactBySearch(String query);
+    void getListContactBySearch(String _idUser);
 
 }

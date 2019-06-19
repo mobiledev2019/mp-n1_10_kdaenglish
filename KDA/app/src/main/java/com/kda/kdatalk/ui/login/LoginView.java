@@ -4,4 +4,6 @@ public interface LoginView {
     void showProgress();
     void hideProgress();
     void onError(String err);
+
+    void onLoginSuccess(boolean isSuccess);
 }

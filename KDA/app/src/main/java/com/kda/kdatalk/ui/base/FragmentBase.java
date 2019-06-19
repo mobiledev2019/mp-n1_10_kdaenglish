@@ -1,7 +1,9 @@
 package com.kda.kdatalk.ui.base;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
@@ -66,7 +68,7 @@ public abstract class FragmentBase extends Fragment {
 
     public User getUserCache(){
         try{
-            return new Gson().fromJson(MyCache.getInstance().getString(DraffKey.user),User.class);
+            return new Gson().fromJson(MyCache.getInstance().getString(DraffKey.user_info),User.class);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -109,6 +111,14 @@ public abstract class FragmentBase extends Fragment {
         activity.startActivity(intent);
         activity.finish();
 
+    }
+
+
+
+    public boolean isNetworkConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
     }
 
     public static void log_outAPI(Activity context, ProgressBar progressBar) {

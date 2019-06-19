@@ -1,6 +1,7 @@
 package com.kda.kdatalk.ui.main.newfeed.fragment;
 
 import com.kda.kdatalk.model.NewFeed;
+import com.kda.kdatalk.utils.ActionFeed;
 
 import java.util.List;
 
@@ -11,6 +12,10 @@ public interface NewFeedPresenter {
     void showProgress();
     void hideProgress();
 
-    List<NewFeed> getNewFeed();
+    void getNewFeed(int currPage);
+
+    void onActionLike(boolean isAction, String id_feed);
+
+    void getLesson();
 
 }

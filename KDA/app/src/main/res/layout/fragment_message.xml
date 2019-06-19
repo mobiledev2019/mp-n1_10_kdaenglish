@@ -6,89 +6,95 @@
     android:background="@color/black">
 
     <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/iv_ava"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:src="@drawable/user_no_img" />
-
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/font_name"
-            android:gravity="center"
-            android:text="Vu Anh"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-
-
-        <ScrollView
+        android:id="@+id/sw_refresh"
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_ava"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user_no_img" />
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/font_name"
+                android:gravity="center"
+                android:text="Vu Anh"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/bg_space_chat"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:paddingStart="10dp"
-                        android:paddingLeft="10dp"
-                        android:src="@drawable/ic_search_clicked" />
-
-                    <EditText
-                        android:id="@+id/et_search"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="10dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:layout_weight="1"
-                        android:background="@color/transparent"
-                        android:hint="@string/lbl_search"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/gray_icon"
-                        android:textSize="18sp" />
+                        android:background="@drawable/bg_space_chat"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:paddingStart="10dp"
+                            android:paddingLeft="10dp"
+                            android:src="@drawable/ic_search_clicked" />
+
+                        <EditText
+                            android:id="@+id/et_search"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:background="@color/transparent"
+                            android:hint="@string/lbl_search"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/gray_icon"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_chat"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                    </androidx.recyclerview.widget.RecyclerView>
 
                 </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_chat"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+            </ScrollView>
 
-                </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
 
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            </LinearLayout>
-
-        </ScrollView>
-
-    </LinearLayout>
-
-    <ProgressBar
+    <com.kda.kdatalk.ui.widget.ProgressView
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
