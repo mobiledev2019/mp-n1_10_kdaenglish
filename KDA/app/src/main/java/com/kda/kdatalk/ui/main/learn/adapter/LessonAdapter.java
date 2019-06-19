@@ -1,6 +1,7 @@
 package com.kda.kdatalk.ui.main.learn.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class LessonAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
+    private static final String TAG = LessonAdapter.class.getSimpleName();
     private Context mContext;
     private ArrayList<LessonModel> list_model;
     private AdapterView.OnItemClickListener onItemClickListener;
@@ -79,7 +81,14 @@ public class LessonAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             LessonModel model = list_model.get(position);
             tv_name.setText(model.name);
             tv_difficult.setText(model.difficult);
-            Picasso.get().load(model.url_image_lesson)
+
+            Log.e(TAG, "onBind: " + model.url_image_lesson);
+
+            // falke https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/49210821_2212914338949531_2269121412495048704_n.jpg?_nc_cat=110&_nc_oc=AQl5hCOOOs2wFqZM5JdJB0GjxWo3wi4ckjFRBOCXIGau83GcDprhj8zzQ391IWwdcbSL0bolY4od-qX2c2tgRvDq&_nc_ht=scontent.fhan2-4.fna&oh=95ea3986aff858e6e52f96d2038f5430&oe=5DC6ABDE
+
+            String url = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/49210821_2212914338949531_2269121412495048704_n.jpg?_nc_cat=110&_nc_oc=AQl5hCOOOs2wFqZM5JdJB0GjxWo3wi4ckjFRBOCXIGau83GcDprhj8zzQ391IWwdcbSL0bolY4od-qX2c2tgRvDq&_nc_ht=scontent.fhan2-4.fna&oh=95ea3986aff858e6e52f96d2038f5430&oe=5DC6ABDE";
+
+            Picasso.get().load(url)
                     .placeholder(R.drawable.noimg)
                     .error(R.drawable.noimg)
                     .into(iv_less);

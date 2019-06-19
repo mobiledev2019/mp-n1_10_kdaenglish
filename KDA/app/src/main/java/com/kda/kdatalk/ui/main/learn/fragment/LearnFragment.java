@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kda.kdatalk.R;
 import com.kda.kdatalk.model.learn.LearnModel;
 import com.kda.kdatalk.ui.base.FragmentBase;
+import com.kda.kdatalk.ui.main.MainActivity;
 import com.kda.kdatalk.ui.main.learn.LearnActivity;
 import com.kda.kdatalk.ui.main.learn.adapter.LearnAdapter;
 import com.kda.kdatalk.ui.widget.ProgressView;
@@ -80,37 +81,37 @@ public class LearnFragment extends FragmentBase implements LearnFragmentView {
 
         // check draff
 
-        if (isNetworkConnected(mConText)) {
-            // get data
-
-            presenter.getLearnModel();
-        } else {
-
-            if (!MyCache.getInstance().getString(DraffKey.lesson).isEmpty()) {
-
-                Type type = new TypeToken<List<LearnModel>>() {
-                }.getType();
-                list_data = MyGson.getInstance().fromJson(MyCache.getInstance().getString(DraffKey.lesson), type);
-
-                if (list_data == null) {
-                    list_data = new ArrayList<>();
-                }
-
-                isDraff = list_data.size() > 0;
-
-                //                for (int i = 0; i < list_data.size(); i++) {
-//                    if (list_data.get(i) != null) {
-//                        if (player_request.getPlayer_code().equals(((SurveyDraff_P44) arr_data.get(i)).getPlayer_code())) {
-//                            surveyDraffP44 = (SurveyDraff_P44) arr_data.get(i);
-//                            position = i;
-//                            isDraff = true;
-//                            break;
-//                        }
-//                    }
+//        if (isNetworkConnected(mConText)) {
+//            // get data
+//
+//            presenter.getLearnModel();
+//        } else {
+//
+//            if (!MyCache.getInstance().getString(DraffKey.lesson).isEmpty()) {
+//
+//                Type type = new TypeToken<List<LearnModel>>() {
+//                }.getType();
+//                list_data = MyGson.getInstance().fromJson(MyCache.getInstance().getString(DraffKey.lesson), type);
+//
+//                if (list_data == null) {
+//                    list_data = new ArrayList<>();
 //                }
-
-            }
-        }
+//
+//                isDraff = list_data.size() > 0;
+//
+//                //                for (int i = 0; i < list_data.size(); i++) {
+////                    if (list_data.get(i) != null) {
+////                        if (player_request.getPlayer_code().equals(((SurveyDraff_P44) arr_data.get(i)).getPlayer_code())) {
+////                            surveyDraffP44 = (SurveyDraff_P44) arr_data.get(i);
+////                            position = i;
+////                            isDraff = true;
+////                            break;
+////                        }
+////                    }
+////                }
+//
+//            }
+//        }
 
 
     }
@@ -144,7 +145,8 @@ public class LearnFragment extends FragmentBase implements LearnFragmentView {
         if (isNetworkConnected(mConText)) {
 
             Intent intent = new Intent(mConText, LearnActivity.class);
-            intent.putExtra("id_lesson", list_data.get(position).list_lesson.get((int)id).id);
+            intent.putExtra("position_lesson", (int)id);
+            intent.putExtra("position_learn", position);
             Toast.makeText(mConText, "parent: " + position + "|=> child: " + id + "data: " + list_data.get(position).list_lesson.get((int)id).id  , Toast.LENGTH_SHORT).show();
             mConText.startActivity(intent);
         } else {
@@ -160,9 +162,9 @@ public class LearnFragment extends FragmentBase implements LearnFragmentView {
         rv_learn.setHasFixedSize(true);
         //
 
-        list_data = presenter.getLearnModel();
         // save data
-        saveDraft();
+        list_data = MainActivity.drafLesson;
+//        saveDraft();
 
 
         adapter = new LearnAdapter(mConText,list_data,onItemClickListener);

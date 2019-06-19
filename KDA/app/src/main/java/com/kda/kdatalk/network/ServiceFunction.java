@@ -69,9 +69,8 @@ public interface ServiceFunction {
     Call<String> getDetailUser(@Header("x-access-token") String token, @Url String url);
 
 
-    @FormUrlEncoded
-    @POST(ServiceConst.NEWFEED)
-    Call<String> getLearnModel(@Header("x-access-token") String token, @Body RequestBody data);
+    @GET
+    Call<String> getLearnModel(@Url String url);
 
 
     @POST(ServiceConst.NEWFEED)

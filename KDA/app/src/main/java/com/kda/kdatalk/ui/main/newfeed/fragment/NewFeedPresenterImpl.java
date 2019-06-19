@@ -344,10 +344,13 @@ public class NewFeedPresenterImpl implements NewFeedPresenter {
         }
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), send.toString());
+        String url = "http://35.247.180.113:4000/getLession";
 
-        serviceFunction.getLearnModel(accessToken, requestBody).enqueue(new Callback<String>() {
+        serviceFunction.getLearnModel(url).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.e(TAG, "onResponse:getLesson " + response.body());
                 if (response.isSuccessful() && response.code() == 200) {
 
                     ArrayList<LearnModel> arr_learn = new ArrayList<>();
@@ -401,7 +404,7 @@ public class NewFeedPresenterImpl implements NewFeedPresenter {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                Log.e(TAG, "onFailure: " + t.getMessage());
             }
         });
     }

@@ -8,11 +8,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.reflect.TypeToken;
 import com.kda.kdatalk.R;
+import com.kda.kdatalk.model.learn.LearnModel;
+import com.kda.kdatalk.model.learn.LessonModel;
+import com.kda.kdatalk.model.learn.VocabModel;
 import com.kda.kdatalk.network.APIUtils;
 import com.kda.kdatalk.network.ServiceFunction;
 import com.kda.kdatalk.socket.SocketUpdateService;
@@ -22,18 +27,25 @@ import com.kda.kdatalk.ui.main.message.fragment.MessageFragment;
 import com.kda.kdatalk.ui.main.newfeed.fragment.FragmentNewFeed;
 import com.kda.kdatalk.ui.main.notification.NotiFragment;
 import com.kda.kdatalk.ui.main.profile.ProfileFragment;
+import com.kda.kdatalk.ui.widget.ProgressView;
 import com.kda.kdatalk.utils.AppConstants;
 import com.kda.kdatalk.utils.DraffKey;
 import com.kda.kdatalk.utils.MyCache;
+import com.kda.kdatalk.utils.MyGson;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
@@ -61,6 +73,13 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
     @BindView(R.id.ah_bottom_nav)
     AHBottomNavigation bottom_nav_bar;
 
+    @BindView(R.id.progress_bar)
+    ProgressView progress_bar;
+
+    boolean isDraff = false;
+
+    public static ArrayList<LearnModel> drafLesson = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +100,176 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
 
         Intent intent = new Intent(this, SocketUpdateService.class);
         startService(intent);
+
+
+        // check draf in lesson
+
+//        if (!MyCache.getInstance().getString(DraffKey.lesson).isEmpty()) {
+//
+//            Type type = new TypeToken<List<LearnModel>>() {
+//            }.getType();
+//            drafLesson = MyGson.getInstance().fromJson(MyCache.getInstance().getString(DraffKey.lesson), type);
+//
+//            if (drafLesson == null) {
+//                drafLesson = new ArrayList<>();
+//            }
+//
+//            isDraff = drafLesson.size() > 0;
+//
+//            //                for (int i = 0; i < list_data.size(); i++) {
+////                    if (list_data.get(i) != null) {
+////                        if (player_request.getPlayer_code().equals(((SurveyDraff_P44) arr_data.get(i)).getPlayer_code())) {
+////                            surveyDraffP44 = (SurveyDraff_P44) arr_data.get(i);
+////                            position = i;
+////                            isDraff = true;
+////                            break;
+////                        }
+////                    }
+////                }
+//        }
+//
+//        if (!isDraff) {
+//            getLessonData();
+//        }
+
+        showProgress(true);
+
+        getLessonData();
+
+
+
+
+    }
+
+    private void showProgress(boolean isShow) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isShow) {
+                    progress_bar.setVisibility(View.VISIBLE);
+                } else {
+                    progress_bar.setVisibility(View.GONE);
+
+                }
+            }
+        });
+    }
+
+    private void getLessonData() {
+        Random rand = new Random();
+        String url = "http://35.247.180.113:4000/getLession";
+
+        serviceFunction.getLearnModel(url).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.e(TAG, "onResponse:getLesson " + response.body());
+                if (response.isSuccessful() && response.code() == 200) {
+
+                    ArrayList<LearnModel> arr_learn = new ArrayList<>();
+
+                    try {
+                        JSONArray main = new JSONArray(response.body());
+//                        JSONArray data = main.getJSONArray("data");
+
+                        Log.e(TAG, "onResponse:LENGTH DATA LESSON->  " + main.length());
+
+                        for (int i = 0; i < main.length(); i++) {
+                            JSONObject ob = main.getJSONObject(i);
+                            LearnModel model = new LearnModel();
+                            model.id = ob.getString("id");
+                            model.name = ob.getString("name");
+
+                            ArrayList<LessonModel> list_lesson = new ArrayList<>();
+
+                            JSONArray json_less = ob.getJSONArray("list_lession");
+
+                            for (int j = 0; j < json_less.length(); j++) {
+                                JSONObject less = json_less.getJSONObject(j);
+                                LessonModel lessonModel = new LessonModel();
+                                lessonModel.id = less.getString("id");
+                                lessonModel.url_image_lesson = less.getString("url_image_lession");
+                                lessonModel.name = less.getString("name");
+                                lessonModel.difficult = less.getString("difficult");
+
+
+                                // list vocab
+
+                                ArrayList<VocabModel> listVocab = new ArrayList<>();
+
+                                JSONArray arr_vocab = less.getJSONArray("vocal");
+
+                                for (int k = 0; k < arr_vocab.length(); k ++) {
+                                    JSONObject vo = arr_vocab.getJSONObject(k);
+                                    VocabModel vcb = new VocabModel();
+                                    vcb.vocab = vo.getString("vocal");
+
+                                    // fake impress pronun
+
+//                                    int ramdom = rand.nextInt(vcb.vocab.length()-3);
+                                    int ramdom = 0;
+
+                                    String impress = vcb.vocab.substring(ramdom,ramdom+1);
+
+
+                                    vcb.pronun = vo.getString("phonetic");
+//                                    vcb.vocab = vo.getString("vocal");
+                                    vcb.id = "";
+                                    vcb.url_voice = "";
+                                    vcb.impress_pronun = impress;
+
+                                    listVocab.add(vcb);
+
+                                }
+
+                                lessonModel.list_vocab = listVocab;
+
+                                list_lesson.add(lessonModel);
+                            }
+
+
+                            model.list_lesson = list_lesson;
+
+                            //
+
+
+                            arr_learn.add(model);
+
+                        }
+
+
+                        // save draft
+
+                        saveDraft(arr_learn);
+
+                        drafLesson.clear();
+                        drafLesson = arr_learn;
+
+                        showProgress(false);
+                    } catch (JSONException e) {
+
+                        showProgress(false);
+                        Log.e(TAG, "onResponse: " + e.getMessage());
+
+                        e.printStackTrace();
+                    }
+
+                } else {
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.getMessage());
+                showProgress(false);
+            }
+        });
+    }
+
+
+    private void saveDraft(ArrayList<LearnModel> list_learn) {
+        MyCache.getInstance().putString(DraffKey.lesson, MyGson.getInstance().toJson(list_learn));
+        Log.e(TAG, "saveDraft: " + MyGson.getInstance().toJson(list_learn));
     }
 
     private void getnumNewNoti() {

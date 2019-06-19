@@ -1,7 +1,7 @@
 package com.kda.kdatalk.network;
 
 public class ServiceConst {
-    public static final String URL_SERVER_KDA = "https://df4fb1f7.ngrok.io";
+    public static final String URL_SERVER_KDA = "https://f0207523.ngrok.io";
     public static final String URL_SERVER_SOCKET = "http://35.247.180.113:5000";
 
 //    public static final String URL_SERVER_IMAGE = "https://api.abababba/";

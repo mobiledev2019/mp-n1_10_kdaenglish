@@ -6,5 +6,5 @@ import java.util.ArrayList;
 
 public interface LearnFragmentPresenter {
 
-    ArrayList<LearnModel> getLearnModel();
+    void getLearnModel();
 }

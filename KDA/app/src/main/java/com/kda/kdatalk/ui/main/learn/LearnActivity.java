@@ -5,7 +5,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -28,10 +30,14 @@ import com.kda.kdatalk.R;
 import com.kda.kdatalk.databinding.ActivityLearnBinding;
 import com.kda.kdatalk.model.learn.VocabModel;
 import com.kda.kdatalk.ui.base.ActivityBase;
+import com.kda.kdatalk.ui.main.MainActivity;
+import com.kda.kdatalk.utils.RecordWavMaster;
 import com.kda.kdatalk.utils.UtilLibs;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -47,8 +53,14 @@ import butterknife.OnClick;
 
 public class LearnActivity extends ActivityBase implements LearnView {
     private static final String ID_LESSON = "id_lesson";
+    private static final String POSITION_LESSON = "position_lesson";
+    private static final String POSITION_LEARN = "position_learn";
     private static final String TAG = LearnActivity.class.getName();
     private static final int RECORD_CODE = 5;
+
+    private int RECORDER_SAMPLERATE = 16000;
+    private int RECORDER_CHANNELS = 1;
+    private int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
     @BindView(R.id.iv_back)
     ImageView iv_back;
@@ -63,6 +75,8 @@ public class LearnActivity extends ActivityBase implements LearnView {
     ImageView iv_next;
 
 
+    int learn_position  = 0;
+    int less_position  = 0;
     private String id_lesson;
 
     ActivityLearnBinding binding;
@@ -78,8 +92,11 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
     ArrayList<VocabModel> listVocab = new ArrayList<>();
 
+    RecordWavMaster recordManager;
+
+
     // record
-    MediaRecorder myAudioRecorder = null;
+    AudioRecord myAudioRecorder = null;
     String outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + UUID.randomUUID().toString() + "_audio_record.3gp";
 
     String str_base64_record = "";
@@ -94,8 +111,22 @@ public class LearnActivity extends ActivityBase implements LearnView {
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
+
         id_lesson = getIntent().getStringExtra(ID_LESSON);
+        learn_position = getIntent().getIntExtra(POSITION_LEARN,0);
+
+        less_position = getIntent().getIntExtra(POSITION_LESSON,0);
+
+        listVocab = MainActivity.drafLesson.get(learn_position).list_lesson.get(less_position).list_vocab;
+
+
+
+
+
         presenter = new LearnPresenterImpl(this, this);
+
+
+        recordManager = new RecordWavMaster();
 
 //        mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 //            @Override
@@ -112,7 +143,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
     private void setupData() {
 
-        listVocab = presenter.getListVocab(id_lesson);
+//        listVocab = presenter.getListVocab(id_lesson);
 
         if (listVocab != null) {
             try {
@@ -152,18 +183,19 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
                 checkrecordPermission();
 
+                recordManager.recordWavStart();
+
                 setUPMediaRecord();
 
-                try {
-                    myAudioRecorder.prepare();
-                    myAudioRecorder.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    myAudioRecorder.startRecording();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
 
                 Toast.makeText(getApplicationContext(), "Recording started", Toast.LENGTH_SHORT).show();
 
-                return false;
+                return true;
             }
         });
 
@@ -174,11 +206,19 @@ public class LearnActivity extends ActivityBase implements LearnView {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP: {
 
-                        if (myAudioRecorder != null) {
-                            myAudioRecorder.stop();
-                            myAudioRecorder.release();
-                            myAudioRecorder = null;
-                        }
+                        recordManager.recordWavStop();
+
+//                        stopRecording();
+
+//                        if (myAudioRecorder != null) {
+//                            try {
+//                                myAudioRecorder.stop();
+//                            }catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                            myAudioRecorder.release();
+//                            myAudioRecorder = null;
+//                        }
 
                         Log.e(TAG, "onTouch: " + outputFile);
                         convertTobase64(outputFile);
@@ -210,6 +250,9 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
 
     private String convertTobase64(String uri) {
+
+
+
         str_base64_record = "";
         try {
             File file;
@@ -218,7 +261,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
             in.read(fileContent, 0, fileContent.length);
 
-            str_base64_record = Base64.encodeToString(fileContent, 0);
+            str_base64_record = Base64.encodeToString(fileContent, Base64.NO_WRAP);
             //  Utilities.log("~~~~~~~~ Encoded: ", encoded);
 
             // dialog.dismiss();
@@ -226,20 +269,41 @@ public class LearnActivity extends ActivityBase implements LearnView {
             e.printStackTrace();
         }
 
-//        Log.e(TAG, "convertTobase64: " + str_base64_record);
+        Log.e(TAG, "convertTobase64: " + str_base64_record);
         return str_base64_record;
     }
+    int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
+    int BytesPerElement = 2; // 2 bytes in 16bit format
 
     private void setUPMediaRecord() {
-        if (myAudioRecorder == null) {
-            myAudioRecorder = new MediaRecorder();
-            myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-            //UUID.randomUUID().toString()
-            outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "_audio_record.3gp";
-            myAudioRecorder.setOutputFile(outputFile);
-        }
+
+//        int bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE,
+//                RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
+//
+//        if (myAudioRecorder == null) {
+//            myAudioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC,RECORDER_SAMPLERATE,RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
+//
+////            myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+////            myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+////            myAudioRecorder.setAudioSamplingRate(6000);
+////    //            myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+////            //UUID.randomUUID().toString()
+////            myAudioRecorder.setOutputFile(outputFile);
+//        }
+        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "_audio_record.wav";
+//
+//        myAudioRecorder.startRecording();
+//        isRecording = true;
+//
+//        recordingThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                writeAudioDataToFile(outputFile);
+//            }
+//        });
+//
+//        recordingThread.start();
+
     }
 
 
@@ -442,4 +506,145 @@ public class LearnActivity extends ActivityBase implements LearnView {
             super.onBackPressed();
         }
     }
+
+    private void writeAudioDataToFile(String path) {
+        // Write the output audio in byte
+
+        String filePath = path;
+
+//        File file = new File(path);
+//
+//        try {
+//            file.createNewFile();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        short sData[] = new short[BufferElements2Rec];
+
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        while (isRecording) {
+            // gets the voice output from microphone to byte format
+
+            myAudioRecorder.read(sData, 0, BufferElements2Rec);
+            System.out.println("Short wirting to file" + sData.toString());
+            try {
+                // // writes the data to file from buffer
+                // // stores the voice buffer
+                byte bData[] = short2byte(sData);
+                os.write(bData, 0, BufferElements2Rec * BytesPerElement);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private byte[] short2byte(short[] sData) {
+        int shortArrsize = sData.length;
+        byte[] bytes = new byte[shortArrsize * 2];
+        for (int i = 0; i < shortArrsize; i++) {
+            bytes[i * 2] = (byte) (sData[i] & 0x00FF);
+            bytes[(i * 2) + 1] = (byte) (sData[i] >> 8);
+            sData[i] = 0;
+        }
+        return bytes;
+
+    }
+    private boolean isRecording = false;
+    private Thread recordingThread = null;
+
+    private void stopRecording() {
+        // stops the recording activity
+        if (null != myAudioRecorder) {
+            isRecording = false;
+            myAudioRecorder.stop();
+            myAudioRecorder.release();
+            myAudioRecorder = null;
+            recordingThread = null;
+        }
+    }
+
+
+//    public void recordWavStart() {
+//        isRecording = true;
+//        myAudioRecorder.startRecording();
+//        mRecording = getFile("raw");
+//        startBufferedWrite(mRecording);
+//    }
+
+//    public String recordWavStop() {
+//        try {
+//            mIsRecording = false;
+//            mRecorder.stop();
+//            File waveFile = getFile("wav");
+//            rawToWave(mRecording, waveFile);
+//            Log.e("path_audioFilePath",audioFilePath);
+//            return audioFilePath;
+//        } catch (Exception e) {
+//            Log.e("Error saving file : ", e.getMessage());
+//        }
+//        return  null;
+//    }
+//
+//
+//    private void rawToWave(final File rawFile, final File waveFile) throws IOException {
+//
+//        byte[] rawData = new byte[(int) rawFile.length()];
+//        DataInputStream input = null;
+//        try {
+//            input = new DataInputStream(new FileInputStream(rawFile));
+//            input.read(rawData);
+//        } finally {
+//            if (input != null) {
+//                input.close();
+//            }
+//        }
+//        DataOutputStream output = null;
+//        try {
+//            output = new DataOutputStream(new FileOutputStream(waveFile));
+//            // WAVE header
+//            writeString(output, "RIFF"); // chunk id
+//            writeInt(output, 36 + rawData.length); // chunk size
+//            writeString(output, "WAVE"); // format
+//            writeString(output, "fmt "); // subchunk 1 id
+//            writeInt(output, 16); // subchunk 1 size
+//            writeShort(output, (short) 1); // audio format (1 = PCM)
+//            writeShort(output, (short) 1); // number of channels
+//            writeInt(output, SAMPLE_RATE); // sample rate
+//            writeInt(output, SAMPLE_RATE * 2); // byte rate
+//            writeShort(output, (short) 2); // block align
+//            writeShort(output, (short) 16); // bits per sample
+//            writeString(output, "data"); // subchunk 2 id
+//            writeInt(output, rawData.length); // subchunk 2 size
+//            // Audio data (conversion big endian -> little endian)
+//            short[] shorts = new short[rawData.length / 2];
+//            ByteBuffer.wrap(rawData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+//            ByteBuffer bytes = ByteBuffer.allocate(shorts.length * 2);
+//            for (short s : shorts) {
+//                bytes.putShort(s);
+//            }
+//            output.write(bytes.array());
+//        } finally {
+//            if (output != null) {
+//                output.close();
+//                rawFile.delete();
+//            }
+//        }
+//
+//
+//    }
+
+
+
 }
