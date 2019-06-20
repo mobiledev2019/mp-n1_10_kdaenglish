@@ -250,7 +250,20 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
                             Toast.makeText(getApplicationContext(), "Recording stop", Toast.LENGTH_SHORT).show();
                         } else {
-                            UtilLibs.showAlert(mContext, "Không có kết nối internet!");
+
+                            UtilLibs.showAlert(mContext, "Không có kết nối internet!\nBạn sẽ không biết được lỗi sai trong phát âm khi chưa kết nối internet\nTiếp tục?", new UtilLibs.ListenerAlert() {
+                                @Override
+                                public void cancel() {
+                                    
+                                }
+
+                                @Override
+                                public void agree() {
+                                    listVocab.get(curr_position).isComplete = true;
+                                    listVocab.get(curr_position).point = 0;
+                                    setUpDataview();
+                                }
+                            });
                         }
 
                         //stop recording voice if a long hold was detected and a recording started
