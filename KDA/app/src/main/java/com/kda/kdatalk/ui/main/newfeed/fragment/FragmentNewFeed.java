@@ -141,6 +141,7 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
             @Override
             public void onLoad() {
                 listNewFeed.add(null);
+                adapter.setIsloading(true);
                 adapter.notifyDataSetChanged();
                 newFeedPresenter.getNewFeed(currPage);
             }
@@ -193,30 +194,35 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
             listNewFeed.clear();
         }
 
-        currPage++;
 
         if (listNewFeed.size()> 0) {
             listNewFeed.remove(listNewFeed.size()-1);
         }
 
-        listNewFeed.addAll(list_feed);
-        Log.e(TAG, "getFeedSuccess: " + listNewFeed.size());
-        adapter.setList_data(listNewFeed);
+        if (list_feed!= null && list_feed.size() > 0) {
+            currPage++;
+            listNewFeed.addAll(list_feed);
+            Log.e(TAG, "getFeedSuccess: " + listNewFeed.size());
+            adapter.setList_data(listNewFeed);
 
-        adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
 
-        try {
+            try {
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                }
-            });
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
 
-        }catch (Exception e) {
+            }catch (Exception e) {
 
+            }
         }
+
+
+
 
         if (swip_refresh.isRefreshing()) {
             swip_refresh.setRefreshing(false);

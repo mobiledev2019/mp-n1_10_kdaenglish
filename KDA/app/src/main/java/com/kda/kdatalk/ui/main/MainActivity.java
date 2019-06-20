@@ -104,37 +104,38 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
 
         // check draf in lesson
 
-//        if (!MyCache.getInstance().getString(DraffKey.lesson).isEmpty()) {
-//
-//            Type type = new TypeToken<List<LearnModel>>() {
-//            }.getType();
-//            drafLesson = MyGson.getInstance().fromJson(MyCache.getInstance().getString(DraffKey.lesson), type);
-//
-//            if (drafLesson == null) {
-//                drafLesson = new ArrayList<>();
-//            }
-//
-//            isDraff = drafLesson.size() > 0;
-//
-//            //                for (int i = 0; i < list_data.size(); i++) {
-////                    if (list_data.get(i) != null) {
-////                        if (player_request.getPlayer_code().equals(((SurveyDraff_P44) arr_data.get(i)).getPlayer_code())) {
-////                            surveyDraffP44 = (SurveyDraff_P44) arr_data.get(i);
-////                            position = i;
-////                            isDraff = true;
-////                            break;
-////                        }
-////                    }
-////                }
-//        }
-//
-//        if (!isDraff) {
-//            getLessonData();
-//        }
+        if (!MyCache.getInstance().getString(DraffKey.lesson).isEmpty()) {
 
-        showProgress(true);
+            Type type = new TypeToken<List<LearnModel>>() {
+            }.getType();
+            drafLesson = MyGson.getInstance().fromJson(MyCache.getInstance().getString(DraffKey.lesson), type);
 
-        getLessonData();
+            if (drafLesson == null) {
+                drafLesson = new ArrayList<>();
+            }
+
+            isDraff = drafLesson.size() > 0;
+
+            //                for (int i = 0; i < list_data.size(); i++) {
+//                    if (list_data.get(i) != null) {
+//                        if (player_request.getPlayer_code().equals(((SurveyDraff_P44) arr_data.get(i)).getPlayer_code())) {
+//                            surveyDraffP44 = (SurveyDraff_P44) arr_data.get(i);
+//                            position = i;
+//                            isDraff = true;
+//                            break;
+//                        }
+//                    }
+//                }
+        }
+
+        if (!isDraff) {
+            showProgress(true);
+
+            getLessonData();
+        }
+
+
+//        getLessonData();
 
 
 
@@ -215,7 +216,7 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
                                     vcb.pronun = vo.getString("phonetic");
 //                                    vcb.vocab = vo.getString("vocal");
                                     vcb.id = "";
-                                    vcb.url_voice = "";
+                                    vcb.url_voice = vo.getString("link");
                                     vcb.impress_pronun = impress;
 
                                     listVocab.add(vcb);
@@ -273,6 +274,7 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
     }
 
     private void getnumNewNoti() {
+        showProgress(true);
         serviceFunction = APIUtils.getAPIService();
 
         String accessToken = MyCache.getInstance().getString(DraffKey.accessToken);
@@ -288,7 +290,9 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
                 try {
                     JSONObject main = new JSONObject(response.body());
 
-                    curr_newNoti = main.getInt("num_noti");
+                    JSONObject ob = main.getJSONObject("data");
+
+                    curr_newNoti = ob.getInt("num_noti");
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -297,10 +301,13 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
                         }
                     });
 
+                    showProgress(false);
 
 
 
                 } catch (JSONException e) {
+                    showProgress(false);
+
                     e.printStackTrace();
                 }
             }
@@ -308,6 +315,7 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e(TAG, "onFailure: getnumNewNoti" + t.getMessage() );
+                showProgress(false);
 
             }
         });

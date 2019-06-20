@@ -10,11 +10,14 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.Html;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Base64;
@@ -33,6 +36,7 @@ import com.kda.kdatalk.ui.base.ActivityBase;
 import com.kda.kdatalk.ui.main.MainActivity;
 import com.kda.kdatalk.utils.RecordWavMaster;
 import com.kda.kdatalk.utils.UtilLibs;
+import com.pixplicity.htmlcompat.HtmlCompat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,9 +78,13 @@ public class LearnActivity extends ActivityBase implements LearnView {
     @BindView(R.id.iv_next)
     ImageView iv_next;
 
+    @BindView(R.id.tv_result_phonetic)
+    TextView tv_result_phonetic;
 
-    int learn_position  = 0;
-    int less_position  = 0;
+    String url_media_fake = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3";
+
+    int learn_position = 0;
+    int less_position = 0;
     private String id_lesson;
 
     ActivityLearnBinding binding;
@@ -113,14 +121,11 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
 
         id_lesson = getIntent().getStringExtra(ID_LESSON);
-        learn_position = getIntent().getIntExtra(POSITION_LEARN,0);
+        learn_position = getIntent().getIntExtra(POSITION_LEARN, 0);
 
-        less_position = getIntent().getIntExtra(POSITION_LESSON,0);
+        less_position = getIntent().getIntExtra(POSITION_LESSON, 0);
 
         listVocab = MainActivity.drafLesson.get(learn_position).list_lesson.get(less_position).list_vocab;
-
-
-
 
 
         presenter = new LearnPresenterImpl(this, this);
@@ -158,6 +163,8 @@ public class LearnActivity extends ActivityBase implements LearnView {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 //
+//                mPlayer.release();
+                mPlayer.reset();
                 enableClick();
 
             }
@@ -207,7 +214,6 @@ public class LearnActivity extends ActivityBase implements LearnView {
                     case MotionEvent.ACTION_UP: {
 
                         recordManager.recordWavStop();
-
 //                        stopRecording();
 
 //                        if (myAudioRecorder != null) {
@@ -222,11 +228,15 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
                         Log.e(TAG, "onTouch: " + outputFile);
                         convertTobase64(outputFile);
+
+//                        Log.e(TAG, "onTouch: DELETE_FILE" + deleteFile(outputFile));
+                        deleteFilee(outputFile);
+
                         showProgress();
 
-                        presenter.sendVoiceVocab(listVocab.get(curr_position).id, str_base64_record);
+                        presenter.sendVoiceVocab(listVocab.get(curr_position).vocab, str_base64_record);
 
-                        listVocab.get(curr_position).point = presenter.getScore(listVocab.get(curr_position).id);
+//                        listVocab.get(curr_position).point = presenter.getScore(listVocab.get(curr_position).id);
                         listVocab.get(curr_position).isComplete = true;
 
                         new Handler().postDelayed(new Runnable() {
@@ -248,9 +258,23 @@ public class LearnActivity extends ActivityBase implements LearnView {
         });
     }
 
+    private void deleteFilee(String outputFile) {
+        File file = new File(outputFile);
+
+        boolean delete = file.delete();
+        Log.e(TAG, "deleteFilee: WAV" + delete);
+
+        File file_raw = new File("/storage/emulated/0/_audio_record.raw");
+
+        delete = file_raw.delete();
+
+        Log.e(TAG, "deleteFilee: RAW" + delete);
+
+
+    }
+
 
     private String convertTobase64(String uri) {
-
 
 
         str_base64_record = "";
@@ -272,6 +296,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
         Log.e(TAG, "convertTobase64: " + str_base64_record);
         return str_base64_record;
     }
+
     int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
     int BytesPerElement = 2; // 2 bytes in 16bit format
 
@@ -326,15 +351,16 @@ public class LearnActivity extends ActivityBase implements LearnView {
                 break;
 
             case R.id.iv_next:
+                tv_result_phonetic.setVisibility(View.GONE);
                 curr_position++;
 
-                if (curr_position < listVocab.size()) {
-                    try {
-                        mPlayer.setDataSource(listVocab.get(curr_position).url_voice);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                if (curr_position < listVocab.size()) {
+//                    try {
+//                        mPlayer.setDataSource(listVocab.get(curr_position).url_voice);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 setUpDataview();
                 Log.e(TAG, "clickView: " + "click Next");
                 break;
@@ -343,28 +369,58 @@ public class LearnActivity extends ActivityBase implements LearnView {
             case R.id.iv_listen:
                 dissableClick();
 
-                if (mPlayer != null) {
-                    mPlayer.stop();
-                    mPlayer.release();
-                    mPlayer.reset();
-                }
-
                 try {
-                    mPlayer.setDataSource("https://soundcloud.com/v-anh-levis/2018-01-30-152725a");
+                    String url = "http://" + listVocab.get(curr_position).url_voice;
+                    Log.e(TAG, "clickView: " + url);
+
+                    try {
+                        mPlayer.reset();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+//                    url_media_fake
+                    mPlayer.setDataSource(url);
                     mPlayer.prepare();
+                    mPlayer.start();
+//                    mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//                        @Override
+//                        public void onPrepared(MediaPlayer mp) {
+//                            mPlayer.start();
+//                        }
+//                    });
+////                    mPlayer.prepare();
                 } catch (IOException e) {
+                    enableClick();
+
+                    UtilLibs.showAlert(mContext, "Lỗi nguồn âm thanh!");
+                    Log.e(TAG, "clickView: " + e.getMessage());
                     e.printStackTrace();
                 }
 
+
+//                if (mPlayer != null) {
+//                    mPlayer.stop();
+//                    mPlayer.release();
+//                    mPlayer.reset();
+//                }
+//
+//                try {
+//                    mPlayer.setDataSource("https://soundcloud.com/v-anh-levis/2018-01-30-152725a");
+//                    mPlayer.prepare();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+
 //                mPlayer.start();
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        enableClick();
-                    }
-                }, 2000);
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        enableClick();
+//                    }
+//                }, 2000);
 
 
                 break;
@@ -431,7 +487,17 @@ public class LearnActivity extends ActivityBase implements LearnView {
         if (listVocab.get(listVocab.size() - 1).isComplete) {
             // done -> show dialog
 
-            UtilLibs.showAlert(mContext, "Bạn đã hoàn thành bài học với số điểm là " + curr_score + "/" + listVocab.size() * 100);
+            UtilLibs.showAlert(mContext, "Bạn đã hoàn thành bài học với số điểm là " + curr_score + "/" + listVocab.size() * 100, new UtilLibs.ListenerAlert() {
+                @Override
+                public void cancel() {
+                    onBackPressed();
+                }
+
+                @Override
+                public void agree() {
+                    onBackPressed();
+                }
+            });
 
         }
 
@@ -474,6 +540,10 @@ public class LearnActivity extends ActivityBase implements LearnView {
     @Override
     public void onError(String mess) {
 
+        hideProgress();
+
+        UtilLibs.showAlert(mContext,mess);
+
     }
 
     @Override
@@ -482,6 +552,21 @@ public class LearnActivity extends ActivityBase implements LearnView {
         listVocab.get(curr_position).point = score;
         listVocab.get(curr_position).isComplete = true;
 
+        setUpDataview();
+
+
+    }
+
+    @Override
+    public void resultVoice(String phonetic, int score) {
+        listVocab.get(curr_position).point = score;
+        listVocab.get(curr_position).isComplete = true;
+
+        Log.e(TAG, "resultVoice: " + phonetic);
+        Spanned fromHtml_corr = HtmlCompat.fromHtml(mContext, phonetic, 0);
+
+        tv_result_phonetic.setText(fromHtml_corr);
+        tv_result_phonetic.setVisibility(View.VISIBLE);
         setUpDataview();
 
     }
@@ -550,6 +635,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
             e.printStackTrace();
         }
     }
+
     private byte[] short2byte(short[] sData) {
         int shortArrsize = sData.length;
         byte[] bytes = new byte[shortArrsize * 2];
@@ -561,6 +647,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
         return bytes;
 
     }
+
     private boolean isRecording = false;
     private Thread recordingThread = null;
 
@@ -644,7 +731,6 @@ public class LearnActivity extends ActivityBase implements LearnView {
 //
 //
 //    }
-
 
 
 }

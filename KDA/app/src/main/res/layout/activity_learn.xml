@@ -65,6 +65,17 @@
                             android:textSize="38sp" />
 
                         <TextView
+                            android:id="@+id/tv_result_phonetic"
+                            android:layout_width="wrap_content"
+                            android:layout_above="@id/tv_pronun"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="5dp"
+                            android:visibility="gone"
+                            android:text="vāˈkāSHən"
+                            android:textSize="24sp" />
+
+                        <TextView
                             android:id="@+id/tv_pronun"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

@@ -320,10 +320,10 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
 
         if (isSuccess) {
 
-            Log.e(TAG, "getDetailSuccess: username " + nf.user_name);
+//            Log.e(TAG, "getDetailSuccess: username " + nf.user_name);
 
-            Log.e(TAG, "getDetailSuccess: " + nf.list_comment.size());
-            Log.e(TAG, "getDetailSuccess: " + nf.list_comment.get(1).user.name);
+//            Log.e(TAG, "getDetailSuccess: " + nf.list_comment.size());
+//            Log.e(TAG, "getDetailSuccess: " + nf.list_comment.get(1).user.name);
 
             tv_errhappend.setVisibility(View.GONE);
             showData(true);
@@ -358,6 +358,8 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
     public void createCommentSuccess(Comment comment) {
 
         newFeed.list_comment.add(comment);
+
+        Log.e(TAG, "createCommentSuccess: " + comment.user.url_img_ava);
 
         newFeed.num_comment++;
 

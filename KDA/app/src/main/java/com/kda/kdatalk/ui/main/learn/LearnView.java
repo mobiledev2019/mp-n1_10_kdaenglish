@@ -12,4 +12,6 @@ public interface LearnView {
     void onError(String mess);
 
     void getScoreSuccess(boolean isSuccess, int score);
+
+    void resultVoice(String phonetic, int score);
 }

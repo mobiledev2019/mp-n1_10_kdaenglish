@@ -77,9 +77,8 @@ public interface ServiceFunction {
     Call<String> getListVocab(@Header("x-access-token") String token, @Body RequestBody data);
 
 
-    @FormUrlEncoded
-    @POST(ServiceConst.NEWFEED)
-    Call<String> sendVoiceVocab(@Header("x-access-token") String token, @Body RequestBody data);
+    @POST
+    Call<String> sendVoiceVocab(@Url String url, @Body RequestBody data);
 
 
     @POST(ServiceConst.READ_NOTI)

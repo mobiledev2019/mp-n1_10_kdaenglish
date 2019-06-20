@@ -27,12 +27,12 @@
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <include
-        layout="@layout/kda_progress_layout"
+    <com.kda.kdatalk.ui.widget.ProgressView
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content">
 
-    </include>
+    </com.kda.kdatalk.ui.widget.ProgressView>
 
 </RelativeLayout>

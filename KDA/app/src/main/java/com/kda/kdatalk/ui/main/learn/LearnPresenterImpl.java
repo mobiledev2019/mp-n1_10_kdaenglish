@@ -38,7 +38,7 @@ public class LearnPresenterImpl implements LearnPresenter {
 
 
     @Override
-    public ArrayList<VocabModel> getListVocab(String id_lesson) {
+    public void getListVocab(String id_lesson) {
 
         //
 
@@ -102,26 +102,6 @@ public class LearnPresenterImpl implements LearnPresenter {
             }
         });
 
-
-        ArrayList<VocabModel> listVocab = new ArrayList<>();
-
-        VocabModel vocabModel = new VocabModel("0", "vacation", "vāˈkāSHən", "url", 0, "ca");
-        listVocab.add(vocabModel);
-
-        vocabModel = new VocabModel("1", "connect", "kəˈnekt", "url", 0, "ec");
-        listVocab.add(vocabModel);
-
-        vocabModel = new VocabModel("2", "legendary", "ledʒənderi", "url", 0, "le");
-        listVocab.add(vocabModel);
-
-        vocabModel = new VocabModel("3", "people", "ˈpiːpl", "url", 0, "pe");
-        listVocab.add(vocabModel);
-
-        vocabModel = new VocabModel("4", "masturbate", "ˈmæstərbeɪt", "url", 0, "mas");
-        listVocab.add(vocabModel);
-
-
-        return listVocab;
     }
 
     @Override
@@ -141,48 +121,67 @@ public class LearnPresenterImpl implements LearnPresenter {
     }
 
     @Override
-    public void sendVoiceVocab(String id_vocab, String base64) {
+    public void sendVoiceVocab(String word, String base64) {
 
-//        JSONObject send=  new JSONObject();
-//        try {
-//            send.put("accessToken", accessToken);
-//            send.put("id_vocab", id_vocab);
-//            send.put("base64", base64);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+        JSONObject send = new JSONObject();
+        try {
+            send.put("word", word);
+            send.put("encode", base64);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "sendVoiceVocab: DATA SEND " + send.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), send.toString());
+
+        String url = "http://35.247.180.113:4000/getScore";
+
+        serviceFunction.sendVoiceVocab(url, requestBody).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.e(TAG, "onResponse: " + response.body() );
+
+                String result_phonetic = "";
+                int result_score;
+
+                if (response.isSuccessful() && response.code() == 200) {
+
+                    try {
+                        JSONObject main = new JSONObject(response.body());
+
+//                        JSONArray arr_phonetic = main.getJSONArray("phonetic");
 //
-//        Log.e(TAG, "sendVoiceVocab: DATA SEND " + send.toString());
-//        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), send.toString());
+//                        for (int i = 0; i < arr_phonetic.length(); i++) {
+//                            JSONObject ob = arr_phonetic.getJSONObject(i);
 //
-//        serviceFunction.sendVoiceVocab(accessToken, requestBody).enqueue(new Callback<String>() {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response) {
-//                if (response.isSuccessful() && response.code() == 200) {
 //
-//                    try {
-//                        JSONObject main = new JSONObject(response.body());
-//                        JSONObject data = main.getJSONObject("data");
-//
-//                        int score = data.getInt("score");
-//
-//                        learnView.getScoreSuccess(true, score);
-//                    } catch (JSONException e) {
-//                        learnView.onError(e.getMessage());
-//                        e.printStackTrace();
-//                    }
-//
-//                } else {
-//                    learnView.onError(response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t) {
-//                learnView.onError(t.getMessage());
-//
-//            }
-//        });
+//                        }
+
+                        result_score = main.getInt("score");
+
+                        result_phonetic = main.getString("result");
+
+                        learnView.resultVoice(result_phonetic, result_score);
+
+
+                    } catch (JSONException e) {
+                        learnView.onError(e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    learnView.onError(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.getMessage());
+                learnView.onError(t.getMessage());
+
+            }
+        });
 
     }
 }

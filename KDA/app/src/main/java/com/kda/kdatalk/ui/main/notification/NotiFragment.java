@@ -50,7 +50,7 @@ public class NotiFragment extends FragmentBase implements NotiFragmentView {
     SwipeRefreshLayout sw_refresh;
 
     @BindView(R.id.progress_bar)
-    LinearLayout loading_status;
+    ProgressView progress_bar;
 
     @BindView(R.id.lnl_add_load)
     LinearLayout lnl_add_load;
@@ -286,9 +286,9 @@ public class NotiFragment extends FragmentBase implements NotiFragmentView {
 
     private void showProgress(boolean isShow) {
         if (isShow) {
-            loading_status.setVisibility(View.VISIBLE);
+            progress_bar.setVisibility(View.VISIBLE);
         } else {
-            loading_status.setVisibility(View.GONE);
+            progress_bar.setVisibility(View.GONE);
 
         }
     }
