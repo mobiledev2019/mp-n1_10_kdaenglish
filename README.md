@@ -12,7 +12,7 @@ Le Vu Anh | Do Hoang Thai Duong | Nguyen Quoc Khanh
 | 3   | Đỗ Hoàng Thái Dương | **- Backend:** <br>  + Xây dựng Chat service <br> + Xây dựng Learn service <br> + Crawl data âm thanh của từ vựng <br> **- Machine learning:** <br> + Training model nhận diện âm tiết <br> **- Android:** <br> + Màn hình Chat <br> + Màn hình Learn <br> + Màn hình Login <br> | DEV     |
 
 # Mô tả ứng dụng
-Xem tại file: report_mobile.doc trong git <br>
+Xem tại file: report_mobile.docx trong git <br>
 Hoặc tại [link googledoc](https://docs.google.com/document/d/1o8TjIsdj-_wjevYAM0KccJHhQ912MNHWeygaWQEwikQ/edit?usp=sharing) 
 # Mức độ hoàn thành
 Nhóm đã hoàn thành các yêu cầu Thầy giao bao gồm: <br>
