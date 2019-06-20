@@ -402,5 +402,42 @@ public class ViewContentPresenterImpl implements ViewContentPresenter {
 
     }
 
+    @Override
+    public void actionLike(boolean isAction, String id_feed) {
+        JSONObject ob = new JSONObject();
+
+
+        try {
+//            ob.put("accessToken", accessToken);
+
+
+            ob.put("isLike", isAction ? 1 : 0);
+            ob.put("id_feed", id_feed);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "onActionLike: DATA_SEND " + ob.toString());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), ob.toString());
+
+        serviceFunction.actionLike(accessToken, requestBody).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+//                if (response.isSuccessful() && response.code() == 200) {
+                Log.e(TAG, "onActionLike onResponse: " + response.body());
+//
+//                }
+
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+                Log.e(TAG, "onActionLike onFailure: " + t.getMessage());
+
+            }
+        });
+    }
+
 
 }

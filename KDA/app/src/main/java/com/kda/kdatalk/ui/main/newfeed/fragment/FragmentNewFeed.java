@@ -86,11 +86,14 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
         return viewRoot;
     }
 
+    boolean isReset = false;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         newFeedPresenter = new NewFeedPresenterImpl(mContext, this);
+        showProgress();
         newFeedPresenter.getNewFeed(currPage);
     }
 
@@ -140,10 +143,13 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
         adapter.setOnLoadMore(new NewFeedAdapter.OnLoadMore() {
             @Override
             public void onLoad() {
-                listNewFeed.add(null);
-                adapter.setIsloading(true);
-                adapter.notifyDataSetChanged();
-                newFeedPresenter.getNewFeed(currPage);
+                if (!isReset) {
+                    listNewFeed.add(null);
+                    adapter.setIsloading(true);
+                    adapter.notifyDataSetChanged();
+                    newFeedPresenter.getNewFeed(currPage);
+                    Log.e(TAG, "onLoadMORE: " );
+                }
             }
         });
 
@@ -155,8 +161,10 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
             @Override
             public void onRefresh() {
                 // do get data -> refresh
+                isReset = true;
                 currPage = 1;
                 listNewFeed.clear();
+                showProgress();
                 newFeedPresenter.getNewFeed(currPage);
                 adapter.notifyDataSetChanged();
 
@@ -189,17 +197,30 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
     @Override
     public void getFeedSuccess(ArrayList<NewFeed> list_feed) {
         adapter.setIsloading(false);
+        isReset = false;
 
-        if (currPage == 1) {
+//        Log.e(TAG, "getFeedSuccess: " + listNewFeed.size());
+
+        if (currPage <= 1) {
             listNewFeed.clear();
         }
 
+        if (listNewFeed.size() > 0) {
 
-        if (listNewFeed.size()> 0) {
-            listNewFeed.remove(listNewFeed.size()-1);
+            if (listNewFeed.get(listNewFeed.size() - 1) == null) {
+                listNewFeed.remove(listNewFeed.size() - 1);
+            }
+
         }
 
-        if (list_feed!= null && list_feed.size() > 0) {
+        if (list_feed != null && list_feed.size() > 0) {
+
+            if (currPage <= 1) {
+                listNewFeed.clear();
+            }
+
+            Log.e(TAG, "getFeedSuccess: size old" + listNewFeed.size() + "->" + list_feed.size());
+
             currPage++;
             listNewFeed.addAll(list_feed);
             Log.e(TAG, "getFeedSuccess: " + listNewFeed.size());
@@ -216,13 +237,18 @@ public class FragmentNewFeed extends FragmentBase implements NewFeedFragmentView
                     }
                 });
 
-            }catch (Exception e) {
+            } catch (Exception e) {
 
             }
         }
 
+        if (listNewFeed.get(listNewFeed.size() - 1) == null) {
+            listNewFeed.remove(listNewFeed.size() - 1);
+        }
 
+//        Log.e(TAG, "getFeedSuccess: " + listNewFeed.size());
 
+        adapter.notifyDataSetChanged();
 
         if (swip_refresh.isRefreshing()) {
             swip_refresh.setRefreshing(false);

@@ -75,7 +75,7 @@ public class NewFeedPresenterImpl implements NewFeedPresenter {
     public void getNewFeed(int currPage) {
         // call Api
 
-        newFeedFragmentView.showProgress();
+//        newFeedFragmentView.showProgress();
 
         JSONObject send = new JSONObject();
         try {
@@ -160,6 +160,7 @@ public class NewFeedPresenterImpl implements NewFeedPresenter {
                         e.printStackTrace();
                     }
 
+                    Log.e(TAG, "onResponse: SIZE FEED" + ahihi.size() );
 
                     newFeedFragmentView.getFeedSuccess(ahihi);
                     newFeedFragmentView.hideProgress();

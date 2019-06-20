@@ -232,22 +232,26 @@ public class LearnActivity extends ActivityBase implements LearnView {
 //                        Log.e(TAG, "onTouch: DELETE_FILE" + deleteFile(outputFile));
                         deleteFilee(outputFile);
 
-                        showProgress();
+                        if (isNetworkConnected()) {
+                            showProgress();
 
-                        presenter.sendVoiceVocab(listVocab.get(curr_position).vocab, str_base64_record);
+                            presenter.sendVoiceVocab(listVocab.get(curr_position).vocab, str_base64_record);
 
 //                        listVocab.get(curr_position).point = presenter.getScore(listVocab.get(curr_position).id);
-                        listVocab.get(curr_position).isComplete = true;
+                            listVocab.get(curr_position).isComplete = true;
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                hideProgress();
-                            }
-                        }, 2000);
-                        setUpDataview();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hideProgress();
+                                }
+                            }, 2000);
+                            setUpDataview();
 
-                        Toast.makeText(getApplicationContext(), "Recording stop", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Recording stop", Toast.LENGTH_SHORT).show();
+                        } else {
+                            UtilLibs.showAlert(mContext, "Không có kết nối internet!");
+                        }
 
                         //stop recording voice if a long hold was detected and a recording started
                         return true; //indicate we're done listening to this touch listener
@@ -367,22 +371,23 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
 
             case R.id.iv_listen:
-                dissableClick();
-
-                try {
-                    String url = "http://" + listVocab.get(curr_position).url_voice;
-                    Log.e(TAG, "clickView: " + url);
+                if (isNetworkConnected()) {
+                    dissableClick();
 
                     try {
-                        mPlayer.reset();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                        String url = "http://" + listVocab.get(curr_position).url_voice;
+                        Log.e(TAG, "clickView: " + url);
+
+                        try {
+                            mPlayer.reset();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
 //                    url_media_fake
-                    mPlayer.setDataSource(url);
-                    mPlayer.prepare();
-                    mPlayer.start();
+                        mPlayer.setDataSource(url);
+                        mPlayer.prepare();
+                        mPlayer.start();
 //                    mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 //                        @Override
 //                        public void onPrepared(MediaPlayer mp) {
@@ -390,14 +395,17 @@ public class LearnActivity extends ActivityBase implements LearnView {
 //                        }
 //                    });
 ////                    mPlayer.prepare();
-                } catch (IOException e) {
-                    enableClick();
+                    } catch (IOException e) {
+                        enableClick();
 
-                    UtilLibs.showAlert(mContext, "Lỗi nguồn âm thanh!");
-                    Log.e(TAG, "clickView: " + e.getMessage());
-                    e.printStackTrace();
+                        UtilLibs.showAlert(mContext, "Lỗi nguồn âm thanh!");
+                        Log.e(TAG, "clickView: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    UtilLibs.showAlert(mContext, "Không có kết nối internet!");
                 }
-
 
 //                if (mPlayer != null) {
 //                    mPlayer.stop();

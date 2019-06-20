@@ -147,10 +147,25 @@ public class LearnFragment extends FragmentBase implements LearnFragmentView {
             Intent intent = new Intent(mConText, LearnActivity.class);
             intent.putExtra("position_lesson", (int)id);
             intent.putExtra("position_learn", position);
-            Toast.makeText(mConText, "parent: " + position + "|=> child: " + id + "data: " + list_data.get(position).list_lesson.get((int)id).id  , Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mConText, "parent: " + position + "|=> child: " + id + "data: " + list_data.get(position).list_lesson.get((int)id).id  , Toast.LENGTH_SHORT).show();
             mConText.startActivity(intent);
         } else {
-            UtilLibs.showAlert(mConText, "Bạn cần kết nối internet để sử dụng chức năng này!");
+            UtilLibs.showAlert(mConText, "Bạn cần kết nối internet để sử dụng chức năng này!\n Vẫn Tiếp tục?", new UtilLibs.ListenerAlert() {
+                @Override
+                public void cancel() {
+
+                }
+
+                @Override
+                public void agree() {
+
+                    Intent intent = new Intent(mConText, LearnActivity.class);
+                    intent.putExtra("position_lesson", (int)id);
+                    intent.putExtra("position_learn", position);
+//                    Toast.makeText(mConText, "parent: " + position + "|=> child: " + id + "data: " + list_data.get(position).list_lesson.get((int)id).id  , Toast.LENGTH_SHORT).show();
+                    mConText.startActivity(intent);
+                }
+            });
         }
 
     };

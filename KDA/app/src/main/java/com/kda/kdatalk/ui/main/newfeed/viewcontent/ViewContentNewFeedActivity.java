@@ -192,6 +192,8 @@ public class ViewContentNewFeedActivity extends ActivityBase implements ViewCont
                     tv_numLike.setText(String.valueOf(newFeed.num_like));
 
                 }
+
+                presenter.actionLike(newFeed.isLike, newFeed.id);
             }
         });
 

@@ -12,4 +12,6 @@ public interface ViewContentPresenter {
 
     void voteNFup(boolean isUp, String id_comment);
     void voteNFdown(boolean isdown, String id_comment);
+
+    void actionLike(boolean isAction, String id_feed);
 }

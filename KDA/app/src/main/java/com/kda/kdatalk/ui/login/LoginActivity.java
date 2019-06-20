@@ -55,6 +55,7 @@ public class LoginActivity extends ActivityBase implements LoginView {
 
         loginPresenter = new LoginPresenterImpl(this, this, callbackManager);
 
+//        changeFragment(R.id.fragment, LoginFragment.newInstance(), false);
 
         if (MyCache.getInstance().contains(DraffKey.user_login)) {
 
