@@ -1,10 +1,14 @@
 package com.kda.kdatalk.ui.main;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -34,7 +38,9 @@ import com.kda.kdatalk.utils.MyCache;
 import com.kda.kdatalk.utils.MyGson;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -98,8 +104,15 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
 
         getnumNewNoti();
 
-        Intent intent = new Intent(this, SocketUpdateService.class);
-        startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            createNotificationChannel("com.kda.kdatalk", "Notification");
+            startForegroundService(new Intent(MainActivity.this, SocketUpdateService.class));
+        } else {
+            startService(new Intent(MainActivity.this, SocketUpdateService.class));
+        }
+
+//        Intent intent = new Intent(this, SocketUpdateService.class);
+//        startService(intent);
 
 
         // check draf in lesson
@@ -138,9 +151,22 @@ public class MainActivity extends ActivityBase implements BottomNavigationView.O
 //        getLessonData();
 
 
-
-
     }
+
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private String createNotificationChannel(String channel_id, String channel_name){
+//        NotificationChannel chan = new NotificationChannel(channel_id, channel_name, NotificationManager.IMPORTANCE_NONE);
+//
+//        chan.setLightColor(Color.BLUE);
+//        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+//        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        assert manager != null;
+//        manager.createNotificationChannel(chan);
+//        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id);
+//
+//        return channelId
+//    }
 
     private void showProgress(boolean isShow) {
         runOnUiThread(new Runnable() {

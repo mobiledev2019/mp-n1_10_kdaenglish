@@ -86,9 +86,9 @@ public class LessonAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
             // falke https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/49210821_2212914338949531_2269121412495048704_n.jpg?_nc_cat=110&_nc_oc=AQl5hCOOOs2wFqZM5JdJB0GjxWo3wi4ckjFRBOCXIGau83GcDprhj8zzQ391IWwdcbSL0bolY4od-qX2c2tgRvDq&_nc_ht=scontent.fhan2-4.fna&oh=95ea3986aff858e6e52f96d2038f5430&oe=5DC6ABDE
 
-            String url = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/49210821_2212914338949531_2269121412495048704_n.jpg?_nc_cat=110&_nc_oc=AQl5hCOOOs2wFqZM5JdJB0GjxWo3wi4ckjFRBOCXIGau83GcDprhj8zzQ391IWwdcbSL0bolY4od-qX2c2tgRvDq&_nc_ht=scontent.fhan2-4.fna&oh=95ea3986aff858e6e52f96d2038f5430&oe=5DC6ABDE";
+//            String url = "https://scontent.fhan2-4.fna.fbcdn.net/v/t1.0-9/49210821_2212914338949531_2269121412495048704_n.jpg?_nc_cat=110&_nc_oc=AQl5hCOOOs2wFqZM5JdJB0GjxWo3wi4ckjFRBOCXIGau83GcDprhj8zzQ391IWwdcbSL0bolY4od-qX2c2tgRvDq&_nc_ht=scontent.fhan2-4.fna&oh=95ea3986aff858e6e52f96d2038f5430&oe=5DC6ABDE";
 
-            Picasso.get().load(url)
+            Picasso.get().load(R.drawable.icon_lesson)
                     .placeholder(R.drawable.noimg)
                     .error(R.drawable.noimg)
                     .into(iv_less);

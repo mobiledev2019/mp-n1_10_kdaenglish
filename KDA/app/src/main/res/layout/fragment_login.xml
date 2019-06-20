@@ -12,9 +12,9 @@
         <RelativeLayout
 
             android:id="@+id/activityMain"
+            android:background="@drawable/bg_design"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_design">
+            android:layout_height="match_parent">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

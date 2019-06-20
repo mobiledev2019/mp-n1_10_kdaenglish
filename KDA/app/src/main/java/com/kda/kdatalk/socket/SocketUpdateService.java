@@ -3,16 +3,22 @@ package com.kda.kdatalk.socket;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import com.kda.kdatalk.R;
 import com.kda.kdatalk.utils.AppConstants;
@@ -62,6 +68,13 @@ public class SocketUpdateService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.e("Service ", "SocketConnection Service Create -> connect socket");
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            startMyOwnForeground();
+        else
+            startForeground(1, new Notification());
+
         registerReceiver(receiverSocketEvent, new IntentFilter(AppConstants.NEW_MSG));
         SocketClient.getInstants().connect(getApplicationContext());
 //        Log.e("", "SocketConnection: " + " connected");
@@ -219,14 +232,14 @@ public class SocketUpdateService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            Notification.Builder builder = new Notification.Builder(this, "socket")
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText("KDATalk")
-//                    .setChannelId(CHANNEL_ID)
-                    .setAutoCancel(true);
-
-            Notification notification = builder.build();
-            startForeground(1, notification);
+//            Notification.Builder builder = new Notification.Builder(this, "com.kda.kdatalk")
+//                    .setContentTitle(getString(R.string.app_name))
+//                    .setContentText("KDATalk")
+////                    .setChannelId(CHANNEL_ID)
+//                    .setAutoCancel(true);
+//
+//            Notification notification = builder.build();
+//            startForeground(1, notification);
             checkSocketInterval();
             return START_NOT_STICKY;
 
@@ -237,6 +250,30 @@ public class SocketUpdateService extends Service {
 
         }
 
+
+    }
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void startMyOwnForeground() {
+        String NOTIFICATION_CHANNEL_ID = "com.kda.kdatalk";
+        String channelName = "Chat";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setSmallIcon(R.drawable.icon_app)
+                .setContentTitle("App is running in background")
+                .setPriority(NotificationManager.IMPORTANCE_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build();
+        startForeground(2, notification);
 
     }
 

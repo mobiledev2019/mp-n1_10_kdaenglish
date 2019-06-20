@@ -7,14 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.facebook.CallbackManager;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.kda.kdatalk.R;
-import com.kda.kdatalk.network.RetrofitClient;
 import com.kda.kdatalk.ui.base.ActivityBase;
 import com.kda.kdatalk.ui.login.fragment.LoginFragment;
 import com.kda.kdatalk.ui.main.MainActivity;
@@ -26,8 +24,6 @@ import com.kda.kdatalk.utils.UtilLibs;
 import androidx.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.kda.kdatalk.network.ServiceConst.URL_SERVER_KDA;
 
 public class LoginActivity extends ActivityBase implements LoginView {
 //    private static final int RC_SIGN_IN = 10;

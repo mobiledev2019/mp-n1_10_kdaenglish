@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -51,6 +53,7 @@ public class MessageActivity extends ActivityBase implements MessageView {
 
     private static final String ID_MESS = "ID_MESS";
     private static final String URL_PARTNER = "URL_PARTNER";
+    private static final String PARTNER_ID = "PARTNER_ID";
     private static final String PARTNER_NAME = "PARTNER_NAME";
     private static final String TAG = MessageActivity.class.getSimpleName();
 
@@ -79,6 +82,7 @@ public class MessageActivity extends ActivityBase implements MessageView {
     private String id_mess = "";
     private String url_partner = "";
     private String parter_name = "";
+    private String partner_id = "";
 
     ChatAdapter adapter;
 
@@ -93,6 +97,7 @@ public class MessageActivity extends ActivityBase implements MessageView {
         id_mess = getIntent().getStringExtra(ID_MESS);
         url_partner = getIntent().getStringExtra(URL_PARTNER);
         parter_name = getIntent().getStringExtra(PARTNER_NAME);
+        partner_id = getIntent().getStringExtra(PARTNER_ID);
         Log.e(TAG, "onCreate: " + id_mess);
         presenter = new Message_PresenterImpl(this, this);
 
@@ -101,8 +106,14 @@ public class MessageActivity extends ActivityBase implements MessageView {
         registerReceiver(receiver, new IntentFilter(AppConstants.NEWCHAT));
 
 
-        Intent intent = new Intent(this, ChatUpdateService.class);
-        startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(MessageActivity.this, ChatUpdateService.class));
+        } else {
+            startService(new Intent(MessageActivity.this, ChatUpdateService.class));
+        }
+//
+//        Intent intent = new Intent(this, ChatUpdateService.class);
+//        startService(intent);
     }
 
     @Override
@@ -256,7 +267,7 @@ public class MessageActivity extends ActivityBase implements MessageView {
                         las.isSending = false;
                         list_chat.set(list_chat.size() - 1, las);
 
-                    } else {
+                    } else if (c.id_user.equals(partner_id)) {
                         list_chat.add(c);
 
                     }

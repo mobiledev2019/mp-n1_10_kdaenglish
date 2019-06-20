@@ -29,12 +29,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kda.kdatalk.R;
+import com.kda.kdatalk.model.User;
 import com.kda.kdatalk.model.chat.MessageModel;
 import com.kda.kdatalk.ui.base.FragmentBase;
 import com.kda.kdatalk.ui.main.message.MessageActivity;
 import com.kda.kdatalk.ui.main.message.fragment.adapter.Message_Adapter;
 import com.kda.kdatalk.ui.widget.ProgressView;
 import com.kda.kdatalk.utils.UtilLibs;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -74,6 +76,8 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
     MessageFragmentPresenter presenter;
     Timer timer;
 
+    User me;
+
 
     public static MessageFragment newInstance() {
         Bundle args = new Bundle();
@@ -112,7 +116,7 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new MessgaeFragmentImpl(mContext, this);
-
+        me = getUserCache();
         getActivity();
     }
 
@@ -129,6 +133,8 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
 
 //        list_contact = presenter.getListContact();
 
+        setUpData();
+
         presenter.getListContactBySearch(getUserCache()._id);
 
         // get Data
@@ -142,6 +148,16 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
         rv_chat.setAdapter(adapter);
 
         setUpSearch();
+
+    }
+
+    private void setUpData() {
+        Picasso.get().load(me.url_img_ava)
+                .placeholder(R.drawable.user_no_img)
+                .error(R.drawable.user_no_img)
+                .into(iv_ava);
+
+        tv_name.setText(me.name);
 
     }
 
@@ -186,6 +202,7 @@ public class MessageFragment extends FragmentBase implements MessageFragmentView
     AdapterView.OnItemClickListener onItemClickListener = (parent, view, position, id) -> {
         Intent intent = new Intent(mContext, MessageActivity.class);
         intent.putExtra("ID_MESS", list_contact.get(position).id);
+        intent.putExtra("PARTNER_ID", list_contact.get(position).user._id);
         intent.putExtra("URL_PARTNER", list_contact.get(position).user.url_img_ava);
         intent.putExtra("PARTNER_NAME", list_contact.get(position).user.name);
         mContext.startActivity(intent);

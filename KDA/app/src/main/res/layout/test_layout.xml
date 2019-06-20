@@ -15,14 +15,6 @@
         app:civ_border_color="@color/black"
         app:civ_border_width="1dp" >
 
-        <include
-            layout="@layout/layout_circle_imageinside"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true" />
-
     </de.hdodenhof.circleimageview.CircleImageView>
 
 </LinearLayout>

@@ -61,6 +61,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
     private static final String POSITION_LEARN = "position_learn";
     private static final String TAG = LearnActivity.class.getName();
     private static final int RECORD_CODE = 5;
+    private static final int WRITE_EXTERNAL_STORAGE = 6;
 
     private int RECORDER_SAMPLERATE = 16000;
     private int RECORDER_CHANNELS = 1;
@@ -139,6 +140,9 @@ public class LearnActivity extends ActivityBase implements LearnView {
 //
 //            }
 //        });
+
+        checkrecordPermission();
+        checkWritePermission();
 
         setupData();
 //        Log.e(TAG, "onCreate: " + id_lesson);
@@ -254,7 +258,7 @@ public class LearnActivity extends ActivityBase implements LearnView {
                             UtilLibs.showAlert(mContext, "Không có kết nối internet!\nBạn sẽ không biết được lỗi sai trong phát âm khi chưa kết nối internet\nTiếp tục?", new UtilLibs.ListenerAlert() {
                                 @Override
                                 public void cancel() {
-                                    
+
                                 }
 
                                 @Override
@@ -356,6 +360,17 @@ public class LearnActivity extends ActivityBase implements LearnView {
                     RECORD_CODE);
 
         }
+
+
+    }
+
+    private void checkWritePermission(){
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    WRITE_EXTERNAL_STORAGE);
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -532,6 +547,14 @@ public class LearnActivity extends ActivityBase implements LearnView {
 
             } else {
                 checkrecordPermission();
+            }
+        }
+
+        if (requestCode == WRITE_EXTERNAL_STORAGE) {
+            if (resultCode == RESULT_OK) {
+
+            } else {
+                checkWritePermission();
             }
         }
     }

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -25,6 +26,7 @@ import com.kda.kdatalk.ui.main.MainActivity;
 import com.kda.kdatalk.ui.widget.ProgressView;
 import com.kda.kdatalk.utils.MyCache;
 import com.kda.kdatalk.utils.UtilLibs;
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +54,9 @@ public class LoginFragment extends FragmentBase implements LoginFragmentView {
 
     @BindView(R.id.progress_bar)
     ProgressView progress_bar;
+
+    @BindView(R.id.activityMain)
+    RelativeLayout relativeLayout;
 
 
 
@@ -81,6 +86,8 @@ public class LoginFragment extends FragmentBase implements LoginFragmentView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         init();
+//        @drawable/bg_design
+//        Picasso.get().load(R.drawable.bg_design).into(relativeLayout);
     }
 
     @Nullable
