@@ -3,7 +3,9 @@ App was create by my teams
 ----
 This app will helps people comunicate each other and help them to improve pronunciation and speaking skill in English.
 # App Responsibility
-Le Vu Anh | Do Hoang Thai Duong | Nguyen Quoc Khanh
+## Le Vu Anh - B15DCAT009
+## Do Hoang Thai Duong - B15DCAT056
+## Nguyen Quoc Khanh - B15DCAT102
 # Phân công công việc
 | STT | Họ và tên           | Phân công                                                                                                                                                                                                                   | Vai trò |   |
 |-----|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|---|
